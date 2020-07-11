@@ -68,8 +68,13 @@ const setStroke = args => {
 }
 
 const setColor = arg => {
-  color = arg;
+  return color = arg;
 }
+
+const red = _ => setColor('red');
+const green = _ => setColor('green');
+const blue = _ => setColor('blue');
+const yellow = _ => setColor('yellow');
 
 const rectangle = (...argArr) => {
   let coord;
@@ -111,12 +116,12 @@ const rectangle = (...argArr) => {
 };
 
 [
-  setColor('red'),
+  red(),
   setStroke({ width: 0.1, color: 'black' }),
   rectangle({ coord: vector(8, 1), size: vector(3, 5) }),
-  setColor('green'),
+  green(),
   rectangle([1, 3], [3, 3]),
-  setColor('blue'),
+  blue(),
   rectangle(),
 ];
 
