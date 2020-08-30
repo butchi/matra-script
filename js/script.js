@@ -115,6 +115,44 @@ const rectangle = (...argArr) => {
   return g.appendChild(elm);
 };
 
+const circle = (...argArr) => {
+  let coord;
+  let radius;
+
+  if (argArr.length === 0) {
+    coord = vector(0, 0);
+    radius = 1;
+  } else if (argArr.length === 1){
+    coord = vector(argArr[0].coord) || vector(0, 0);
+    radius = vector(argArr[0].radius) || 1;
+  } else if (argArr.length === 2){
+    coord = vector(argArr[0]) || vector(0, 0);
+    radius = vector(argArr[1]) || 1;
+  } else {
+    coord = vector(0, 0);
+    radius = 1;
+  }
+
+  const elm = document.createElementNS(svgNs, 'circle');
+  elm.setAttribute('cx', convertSize(coord.x));
+  elm.setAttribute('cy', convertSize(coord.y));
+  elm.setAttribute('r', convertSize(radius));
+
+  if (stroke.color != null) {
+    elm.setAttribute('stroke', stroke.color);
+  }
+
+  if (stroke.width != null) {
+    elm.setAttribute('stroke-width', convertSize(stroke.width));
+  }
+
+  if (color != null) {
+    elm.setAttribute('fill', color);
+  }
+
+  return g.appendChild(elm);
+};
+
 [
   red(),
   setStroke({ width: 0.1, color: 'black' }),
@@ -122,7 +160,7 @@ const rectangle = (...argArr) => {
   green(),
   rectangle([1, 3], [3, 3]),
   blue(),
-  rectangle(),
+  circle([6, 3], 1)
 ];
 
 svgCanvasElm.appendChild(svgElm);
