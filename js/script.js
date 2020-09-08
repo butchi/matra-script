@@ -1,5 +1,9 @@
 'use strict';
 
+document.getElementById('button-create').addEventListener('click', _evt => {
+  pdfMake.createPdf(docDefinition).open();
+});
+
 const svgNs = 'http://www.w3.org/2000/svg';
 
 const svgCanvasElm = document.querySelector('.svg-canvas');
@@ -71,6 +75,20 @@ const setColor = arg => {
   return color = arg;
 }
 
+const createObject = ({ elementName, attribute }) => {
+  const ret = {};
+
+  const elm = document.createElementNS(svgNs, elementName);
+
+  Object.keys(attribute).forEach(key => {
+    elm.setAttribute(key, attribute[key]);
+  });
+
+  ret.svgElement = elm;
+
+  return ret;
+};
+
 const red = _ => setColor('red');
 const green = _ => setColor('green');
 const blue = _ => setColor('blue');
@@ -94,25 +112,31 @@ const rectangle = (...argArr) => {
     size = vector(1, 1);
   }
 
-  const elm = document.createElementNS(svgNs, 'rect');
-  elm.setAttribute('x', convertSize(coord.x));
-  elm.setAttribute('y', convertSize(coord.y));
-  elm.setAttribute('width', convertSize(size.x));
-  elm.setAttribute('height', convertSize(size.y));
+  const attrObj = {
+    x: convertSize(coord.x), 
+    y: convertSize(coord.y),
+    width: convertSize(size.x),
+    height: convertSize(size.y),
+  };
 
   if (stroke.color != null) {
-    elm.setAttribute('stroke', stroke.color);
+    attrObj['stroke'] = stroke.color;
   }
 
   if (stroke.width != null) {
-    elm.setAttribute('stroke-width', convertSize(stroke.width));
+    attrObj['stroke-width'] = convertSize(stroke.width);
   }
 
   if (color != null) {
-    elm.setAttribute('fill', color);
+    attrObj['fill'] = color;
   }
 
-  return g.appendChild(elm);
+  const { svgElement } = createObject({
+    elementName: 'rect',
+    attribute: attrObj,
+  });
+
+  return g.appendChild(svgElement);
 };
 
 const circle = (...argArr) => {
@@ -124,33 +148,39 @@ const circle = (...argArr) => {
     radius = 1;
   } else if (argArr.length === 1){
     coord = vector(argArr[0].coord) || vector(0, 0);
-    radius = vector(argArr[0].radius) || 1;
+    radius = argArr[0].radius || 1;
   } else if (argArr.length === 2){
     coord = vector(argArr[0]) || vector(0, 0);
-    radius = vector(argArr[1]) || 1;
+    radius = argArr[1] || 1;
   } else {
     coord = vector(0, 0);
     radius = 1;
   }
 
-  const elm = document.createElementNS(svgNs, 'circle');
-  elm.setAttribute('cx', convertSize(coord.x));
-  elm.setAttribute('cy', convertSize(coord.y));
-  elm.setAttribute('r', convertSize(radius));
+  const attrObj = {
+    cx: convertSize(coord.x), 
+    cy: convertSize(coord.y),
+    r: convertSize(radius),
+  };
 
   if (stroke.color != null) {
-    elm.setAttribute('stroke', stroke.color);
+    attrObj['stroke'] = stroke.color;
   }
 
   if (stroke.width != null) {
-    elm.setAttribute('stroke-width', convertSize(stroke.width));
+    attrObj['stroke-width'] = convertSize(stroke.width);
   }
 
   if (color != null) {
-    elm.setAttribute('fill', color);
+    attrObj['fill'] = color;
   }
 
-  return g.appendChild(elm);
+  const { svgElement } = createObject({
+    elementName: 'circle',
+    attribute: attrObj,
+  });
+
+  return g.appendChild(svgElement);
 };
 
 const $code = $('#code');
