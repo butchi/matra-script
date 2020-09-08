@@ -1,6 +1,18 @@
 'use strict';
 
+const canvas = [];
+
+const docDefinition = {
+	content: [{
+    canvas,
+  }],
+	defaultStyle: {
+		color: 'gray',
+	}
+};
+
 document.getElementById('button-create').addEventListener('click', _evt => {
+  console.log(canvas);
   pdfMake.createPdf(docDefinition).open();
 });
 
@@ -44,7 +56,9 @@ const stroke = {
   width: null,
 };
 
-let color = '#000';
+const face = {
+  color: '#000'
+};
 
 const convertSize = arg => {
   if (typeof arg === 'undefined') {
@@ -58,41 +72,94 @@ const convertSize = arg => {
   }
 }
 
-const setStroke = args => {
-  const color = args.color;
-  const width = args.width;
+const setStroke = arg => {
+  const { color, width } = arg;
 
-  if (color) {
-    stroke.color = color;
-  }
+  stroke.color = color;
+  stroke.width = width;
 
-  if (width) {
-    stroke.width = width;
-  }
+  return stroke;
 }
 
-const setColor = arg => {
-  return color = arg;
+const setFace = arg => {
+  const { color } = arg;
+
+  face.color = color;
+
+  return face;
 }
 
 const createObject = ({ elementName, attribute }) => {
   const ret = {};
 
-  const elm = document.createElementNS(svgNs, elementName);
+  let svgElm;
 
-  Object.keys(attribute).forEach(key => {
-    elm.setAttribute(key, attribute[key]);
+  const pdfObj = {
+  };
+
+  const propObj = {
+  };
+
+  if (elementName === undefined) {
+  } else if (elementName === 'rectangle') {
+    const { coord, size } = attribute;
+
+    svgElm = document.createElementNS(svgNs, 'rect')
+
+    pdfObj.type = 'rect';
+
+    propObj['x'] = pdfObj['x'] = convertSize(coord.x);
+    propObj['y'] = pdfObj['y'] = convertSize(coord.y);
+    propObj['width'] = pdfObj['w'] = convertSize(size.x);
+    propObj['height'] =pdfObj['h'] = convertSize(size.y);
+  } else if (elementName === 'circle') {
+    const { coord, radius } = attribute;
+
+    svgElm = document.createElementNS(svgNs, 'circle')
+
+    pdfObj.type = 'ellipse';
+
+    propObj['cx'] = pdfObj['x'] = convertSize(coord.x);
+    propObj['cy'] = pdfObj['y'] = convertSize(coord.y);
+    propObj['r'] = pdfObj['r1'] = propObj['r2'] = convertSize(radius);
+  }
+
+  const { stroke, face } = attribute;
+
+  if (stroke.color != null) {
+    propObj['stroke'] = pdfObj['lineColor'] = stroke.color;
+  }
+
+  if (stroke.width != null) {
+    propObj['stroke-width'] = pdfObj['lineWidth'] = stroke.width;
+  }
+
+  if (face.color != null) {
+    propObj['fill'] = pdfObj['color'] = face.color;
+  }
+
+  Object.keys(propObj).forEach(key => {
+    svgElm.setAttribute(key, propObj[key]);
   });
 
-  ret.svgElement = elm;
+  ret.svgElement = svgElm;
+  ret.pdfObject = pdfObj;
 
   return ret;
 };
 
-const red = _ => setColor('red');
-const green = _ => setColor('green');
-const blue = _ => setColor('blue');
-const yellow = _ => setColor('yellow');
+const red = _ => setFace({
+  color: 'red',
+});
+const green = _ => setFace({
+  color: 'green',
+});
+const blue = _ => setFace({
+  color: 'blue',
+});
+const yellow = _ => setFace({
+  color: 'yellow',
+});
 
 const rectangle = (...argArr) => {
   let coord;
@@ -112,31 +179,24 @@ const rectangle = (...argArr) => {
     size = vector(1, 1);
   }
 
+  const elmName = 'rectangle';
+
   const attrObj = {
-    x: convertSize(coord.x), 
-    y: convertSize(coord.y),
-    width: convertSize(size.x),
-    height: convertSize(size.y),
+    coord,
+    size,
+    stroke,
+    face,
   };
 
-  if (stroke.color != null) {
-    attrObj['stroke'] = stroke.color;
-  }
-
-  if (stroke.width != null) {
-    attrObj['stroke-width'] = convertSize(stroke.width);
-  }
-
-  if (color != null) {
-    attrObj['fill'] = color;
-  }
-
-  const { svgElement } = createObject({
-    elementName: 'rect',
+  const { svgElement, pdfObject } = createObject({
+    elementName: elmName,
     attribute: attrObj,
   });
 
-  return g.appendChild(svgElement);
+  g.appendChild(svgElement);
+  canvas.push(pdfObject);
+
+  return { svgElement, pdfObject };
 };
 
 const circle = (...argArr) => {
@@ -157,30 +217,24 @@ const circle = (...argArr) => {
     radius = 1;
   }
 
+  const elmName = 'circle';
+
   const attrObj = {
-    cx: convertSize(coord.x), 
-    cy: convertSize(coord.y),
-    r: convertSize(radius),
+    coord,
+    radius,
+    stroke,
+    face,
   };
 
-  if (stroke.color != null) {
-    attrObj['stroke'] = stroke.color;
-  }
-
-  if (stroke.width != null) {
-    attrObj['stroke-width'] = convertSize(stroke.width);
-  }
-
-  if (color != null) {
-    attrObj['fill'] = color;
-  }
-
-  const { svgElement } = createObject({
-    elementName: 'circle',
+  const { svgElement, pdfObject } = createObject({
+    elementName: elmName,
     attribute: attrObj,
   });
 
-  return g.appendChild(svgElement);
+  g.appendChild(svgElement);
+  canvas.push(pdfObject);
+
+  return { svgElement, pdfObject };
 };
 
 const $code = $('#code');
@@ -197,7 +251,7 @@ $code.on('input', evt => {
 
 $code.val(`[
   red(),
-  setStroke({ width: 0.1, color: 'black' }),
+  setStroke({ width: 3, color: 'black' }),
   rectangle({ coord: vector(8, 1), size: vector(3, 5) }),
   green(),
   rectangle([1, 3], [3, 3]),
