@@ -153,7 +153,19 @@ const circle = (...argArr) => {
   return g.appendChild(elm);
 };
 
-[
+const $code = $('#code');
+
+$code.on('input', evt => {
+  g.innerHTML = '';
+
+  try {
+    eval(evt.target.value);
+  } catch (e) {
+    console.log(e);
+  }
+})
+
+$code.val(`[
   red(),
   setStroke({ width: 0.1, color: 'black' }),
   rectangle({ coord: vector(8, 1), size: vector(3, 5) }),
@@ -161,6 +173,8 @@ const circle = (...argArr) => {
   rectangle([1, 3], [3, 3]),
   blue(),
   circle([6, 3], 1)
-];
+];`);
+
+$code.trigger('input');
 
 svgCanvasElm.appendChild(svgElm);
