@@ -13,7 +13,6 @@ const docDefinition = {
 };
 
 document.getElementById('button-create').addEventListener('click', _evt => {
-  console.log(canvas);
   pdfMake.createPdf(docDefinition).open();
 });
 
@@ -90,106 +89,22 @@ const setFace = arg => {
   return face;
 }
 
-const createObject = ({ elementName, attribute }) => {
-  const ret = {};
+const createSvgElement = ({ elementName, attribute, content }) => {
+  let ret;
 
   let svgElm;
 
-  const pdfObj = {
-  };
+  svgElm = document.createElementNS(svgNs, elementName);
 
-  const propObj = {
-  };
-
-  if (elementName === undefined) {
-  } else if (elementName === 'rectangle') {
-    const { coord, size, stroke, face } = attribute;
-
-    svgElm = document.createElementNS(svgNs, 'rect')
-
-    pdfObj.type = 'rect';
-
-    propObj['x'] = pdfObj['x'] = convertSize(coord.x);
-    propObj['y'] = pdfObj['y'] = convertSize(coord.y);
-    propObj['width'] = pdfObj['w'] = convertSize(size.x);
-    propObj['height'] =pdfObj['h'] = convertSize(size.y);
-
-    if (stroke.color != null) {
-      propObj['stroke'] = pdfObj['lineColor'] = stroke.color;
-    }
-  
-    if (stroke.width != null) {
-      propObj['stroke-width'] = pdfObj['lineWidth'] = stroke.width;
-    }
-  
-    if (face.color != null) {
-      propObj['fill'] = pdfObj['color'] = face.color;
-    }
-  } else if (elementName === 'circle') {
-    const { coord, radius, stroke, face } = attribute;
-
-    svgElm = document.createElementNS(svgNs, 'circle')
-
-    pdfObj.type = 'ellipse';
-
-    propObj['cx'] = pdfObj['x'] = convertSize(coord.x);
-    propObj['cy'] = pdfObj['y'] = convertSize(coord.y);
-    propObj['r'] = pdfObj['r1'] = propObj['r2'] = convertSize(radius);
-
-    if (stroke.color != null) {
-      propObj['stroke'] = pdfObj['lineColor'] = stroke.color;
-    }
-  
-    if (stroke.width != null) {
-      propObj['stroke-width'] = pdfObj['lineWidth'] = stroke.width;
-    }
-  
-    if (face.color != null) {
-      propObj['fill'] = pdfObj['color'] = face.color;
-    }
-  } else if (elementName === 'text') {
-    const { text, coord, font, stroke, face} = attribute;
-
-    svgElm = document.createElementNS(svgNs, 'text')
-
-    pdfObj.type = 'text';
-
-    propObj['x'] = pdfObj['x'] = convertSize(coord.x);
-    propObj['y'] = pdfObj['y'] = convertSize(coord.y);
-    propObj['font-size'] = convertSize(font.size);
-
-    svgElm.innerHTML = text;
-
-    pdfObj.color = face.color;
-    // pdfObj.font = `15pt Arial`;
-    // pdfObj.font = `${convertSize(size)}pt ${fontName}`;
-    pdfObj.text = text;
-    pdfObj.absolutePosition = {
-      x: convertSize(coord.x),
-      y: convertSize(coord.y),
-    };
-
-    if (stroke.color != null) {
-      propObj['stroke'] = pdfObj['lineColor'] = stroke.color;
-    }
-  
-    if (stroke.width != null) {
-      propObj['stroke-width'] = pdfObj['lineWidth'] = stroke.width;
-    }
-  
-    if (face.color != null) {
-      propObj['fill'] = pdfObj['color'] = face.color;
-    }
-
-    console.log(pdfObj);
-  }
-
-  Object.keys(propObj).forEach(key => {
-    svgElm.setAttribute(key, propObj[key]);
+  Object.keys(attribute).forEach(key => {
+    svgElm.setAttribute(key, attribute[key]);
   });
 
-  ret.svgElement = svgElm;
-  ret.pdfObject = pdfObj;
+  if (content) {
+    svgElm.innerHTML = content;
+  }
+
+  ret = svgElm;
 
   return ret;
 };
@@ -214,127 +129,218 @@ const yellow = _ => setFace({
 });
 
 const rectangle = (...argArr) => {
-  let coord;
-  let size;
-
-  if (argArr.length === 0) {
-    coord = vector(0, 0);
-    size = vector(1, 1);
-  } else if (argArr.length === 1){
-    coord = vector(argArr[0].coord) || vector(0, 0);
-    size = vector(argArr[0].size) || vector(1, 1);
-  } else if (argArr.length === 2){
-    coord = vector(argArr[0]) || vector(0, 0);
-    size = vector(argArr[1]) || vector(1, 1);
-  } else {
-    coord = vector(0, 0);
-    size = vector(1, 1);
-  }
-
-  const elmName = 'rectangle';
-
-  const attrObj = {
-    coord,
-    size,
-    stroke,
-    face,
+  const propObj = {
+    coord: vector(0, 0),
+    size: vector(1, 1),
+    stroke: Object.assign({}, stroke),
+    face: Object.assign({}, face),
   };
 
-  const { svgElement, pdfObject } = createObject({
-    elementName: elmName,
+  if (argArr.length === 0) {
+  } else if (argArr.length === 1){
+    propObj.coord = vector(argArr[0].coord) || vector(0, 0);
+    propObj.size = vector(argArr[0].size) || vector(1, 1);
+  } else if (argArr.length === 2){
+    propObj.coord = vector(argArr[0]) || vector(0, 0);
+    propObj.size = vector(argArr[1]) || vector(1, 1);
+  } else {
+  }
+
+  const attrObj = {
+    "x": convertSize(propObj.coord.x),
+    "y": convertSize(propObj.coord.y),
+    "width": convertSize(propObj.size.x),
+    "height": convertSize(propObj.size.y),
+  };
+
+  if (stroke.color != null) {
+    attrObj['stroke'] = propObj.stroke.color;
+  }
+
+  if (stroke.width != null) {
+    attrObj['stroke-width'] = propObj.stroke.width;
+  }
+
+  if (face.color != null) {
+    attrObj['fill'] = propObj.face.color;
+  }
+
+  const pdfObj = {
+    type: 'rect',
+    x: convertSize(propObj.coord.x),
+    y: convertSize(propObj.coord.y),
+    w: convertSize(propObj.size.x),
+    h: convertSize(propObj.size.y),
+  }
+
+  if (propObj.stroke.color != null) {
+    pdfObj.lineColor = propObj.stroke.color;
+  }
+
+  if (propObj.stroke.width != null) {
+    pdfObj.lineWidth = propObj.stroke.width;
+  }
+
+  if (propObj.face.color != null) {
+    pdfObj.color = propObj.face.color;
+  }
+
+  const svgElm = createSvgElement({
+    elementName: 'rect',
     attribute: attrObj,
   });
 
-  g.appendChild(svgElement);
-  canvas.push(pdfObject);
+  g.appendChild(svgElm);
+  canvas.push(pdfObj);
 
-  return { svgElement, pdfObject };
+  return propObj;
 };
 
 const circle = (...argArr) => {
-  let coord;
-  let radius;
-
-  if (argArr.length === 0) {
-    coord = vector(0, 0);
-    radius = 1;
-  } else if (argArr.length === 1){
-    coord = vector(argArr[0].coord) || vector(0, 0);
-    radius = argArr[0].radius || 1;
-  } else if (argArr.length === 2){
-    coord = vector(argArr[0]) || vector(0, 0);
-    radius = argArr[1] || 1;
-  } else {
-    coord = vector(0, 0);
-    radius = 1;
-  }
-
-  const elmName = 'circle';
-
-  const attrObj = {
-    coord,
-    radius,
-    stroke,
-    face,
+  const propObj = {
+    coord: vector(0, 0),
+    radius: 1,
+    stroke: Object.assign({}, stroke),
+    face: Object.assign({}, face),
   };
 
-  const { svgElement, pdfObject } = createObject({
-    elementName: elmName,
+  if (argArr.length === 0) {
+  } else if (argArr.length === 1){
+    propObj.coord = vector(argArr[0].coord) || vector(0, 0);
+    propObj.radius = argArr[0].radius || 1;
+  } else if (argArr.length === 2){
+    propObj.coord = vector(argArr[0]) || vector(0, 0);
+    propObj.radius = argArr[1] || 1;
+  } else {
+  }
+
+  const attrObj = {
+    "cx": convertSize(propObj.coord.x),
+    "cy": convertSize(propObj.coord.y),
+    "r": convertSize(propObj.radius),
+  };
+
+  if (stroke.color != null) {
+    attrObj['stroke'] = propObj.stroke.color;
+  }
+
+  if (stroke.width != null) {
+    attrObj['stroke-width'] = propObj.stroke.width;
+  }
+
+  if (face.color != null) {
+    attrObj['fill'] = propObj.face.color;
+  }
+
+  const pdfObj = {
+    type: 'ellipse',
+    x: convertSize(propObj.coord.x),
+    y: convertSize(propObj.coord.y),
+    r1: convertSize(propObj.radius),
+    r2: convertSize(propObj.radius),
+  };
+
+  if (stroke.color != null) {
+    pdfObj.lineColor = propObj.stroke.color;
+  }
+
+  if (stroke.width != null) {
+    pdfObj.lineWidth = propObj.stroke.width;
+  }
+
+  if (face.color != null) {
+    pdfObj.color = propObj.face.color;
+  }
+
+  const svgElm = createSvgElement({
+    elementName: 'circle',
     attribute: attrObj,
   });
 
-  g.appendChild(svgElement);
-  canvas.push(pdfObject);
+  g.appendChild(svgElm);
+  canvas.push(pdfObj);
 
-  return { svgElement, pdfObject };
+  return propObj;
 };
 
 const text = (...argArr) => {
-  let text;
-  let coord;
-  let font = {};
-
-  if (argArr.length === 0) {
-    text = '';
-    coord = vector(0, 0);
-    font.size = 1;
-  } else if (argArr.length === 1){
-    text = argArr[0].text || '';
-    coord = vector(argArr[0].coord) || vector(0, 0);
-    font.size = argArr[0].size || 1;
-  } else if (argArr.length === 2){
-    text = vector(argArr[0]) || '';
-    coord = vector(argArr[1]) || vector(0, 0);
-    font.size = 1;
-  } else if (argArr.length === 3){
-    text = vector(argArr[0]) || '';
-    coord = vector(argArr[1]) || vector(0, 0);
-    font.size = argArr[2];
-  } else {
-    text = '';
-    coord = vector(0, 0);
-    font.size = 1;
-  }
-
-  const elmName = 'text';
-
-  const attrObj = {
-    text,
-    coord,
-    font,
-    stroke,
-    face,
+  const propObj = {
+    text: '',
+    coord: vector(0, 0),
+    size: 1,
+    font: {},
+    stroke: Object.assign({}, stroke),
+    face: Object.assign({}, face),
   };
 
-  const { svgElement, pdfObject } = createObject({
-    elementName: elmName,
+  if (argArr.length === 0) {
+  } else if (argArr.length === 1){
+    propObj.text = argArr[0].text || '';
+    propObj.coord = vector(argArr[0].coord) || vector(0, 0);
+    propObj.font.size = argArr[0].size || 1;
+  } else if (argArr.length === 2){
+    propObj.text = vector(argArr[0]) || '';
+    propObj.coord = vector(argArr[1]) || vector(0, 0);
+    propObj.font.size = 1;
+  } else if (argArr.length === 3){
+    propObj.text = vector(argArr[0]) || '';
+    propObj.coord = vector(argArr[1]) || vector(0, 0);
+    propObj.font.size = argArr[2];
+  } else {
+  }
+
+  const attrObj = {
+    "x": convertSize(propObj.coord.x),
+    "y": convertSize(propObj.coord.y),
+    "font-size": convertSize(propObj.font.size),
+  }
+
+  if (stroke.color != null) {
+    attrObj['stroke'] = propObj.stroke.color;
+  }
+
+  if (stroke.width != null) {
+    attrObj['stroke-width'] = propObj.stroke.width;
+  }
+
+  if (face.color != null) {
+    attrObj['fill'] = propObj.face.color;
+  }
+
+  const svgElm = createSvgElement({
+    elementName: 'text',
     attribute: attrObj,
+    content: propObj.text,
   });
 
-  g.appendChild(svgElement);
-  content.push(pdfObject);
+  const pdfObj = {
+    type: 'text',
+    color: propObj.face.color,
+    // pdfObj.font = `15pt Arial`;
+    // pdfObj.font = `${convertSize(size)}pt ${fontName}`;
+    text: propObj.text,
+    absolutePosition: {
+      x: convertSize(propObj.coord.x),
+      y: convertSize(propObj.coord.y),
+    },
+  };
 
-  return { svgElement, pdfObject };
+  if (propObj.stroke.color != null) {
+    pdfObj.lineColor = propObj.stroke.color;
+  }
+
+  if (propObj.stroke.width != null) {
+    pdfObj.lineWidth = propObj.stroke.width;
+  }
+
+  if (propObj.face.color != null) {
+    pdfObj.color = propObj.face.color;
+  }
+
+  g.appendChild(svgElm);
+  content.push(pdfObj);
+
+  return propObj;
 };
 
 const $code = $('#code');
@@ -360,6 +366,7 @@ $code.val(`[
   rectangle([1, 3], [3, 3]),
   blue(),
   circle([6, 3], 1),
+  setStroke({ width: 0 }),
   black(),
   text('Thanks, world!', [1, 1], 1),
 ];`);
