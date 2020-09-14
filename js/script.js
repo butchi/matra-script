@@ -387,7 +387,7 @@ const text = (...argArr) => {
   }
 
   if (propObj.stroke.width != null) {
-    attrObj['stroke-width'] = propObj.stroke.width;
+    attrObj['stroke-width'] = convertSize(propObj.stroke.width);
   }
 
   if (propObj.face.color != null) {
@@ -399,7 +399,7 @@ const text = (...argArr) => {
   }
 
   if (propObj.font.size != null) {
-    attrObj['font-size'] = propObj.font.size;
+    attrObj['font-size'] = convertSize(propObj.font.size);
   }
 
   if (propObj.align != null) {
@@ -489,7 +489,7 @@ $code.val(`[
   circle([6, 3], 1),
   setStroke({ width: 0 }),
   black(),
-  text({ text: "Thanks, world!", coord: vector(5, 1), size: 1, align: 0 }),
+  text({ content: "Thanks, world!", coord: vector(5, 1), font: { size: 1 }, align: 0 }),
 ];`);
 
 svgCanvasElm.appendChild(svgElm);
