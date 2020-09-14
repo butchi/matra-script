@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "jquery": "^3.5.1",
-    "pdfmake": "^0.1.68"
-  }
-}
