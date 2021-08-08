@@ -253,15 +253,20 @@ const rectangle = (...argArr) => {
     size: vector(1, 1),
     stroke: Object.assign({}, stroke),
     face: Object.assign({}, face),
+    radius: vector(0, 0),
   };
 
   if (argArr.length === 0) {
   } else if (argArr.length === 1){
     propObj.coord = vector(argArr[0].coord) || vector(0, 0);
     propObj.size = vector(argArr[0].size) || vector(1, 1);
+    propObj.radius = vector(argArr[0].radius) || vector(0, 0);
+    propObj.stroke = Object.assign({}, propObj.stroke, argArr[0].stroke);
+    propObj.face = Object.assign({}, propObj.face, argArr[0].face);
   } else if (argArr.length === 2){
     propObj.coord = vector(argArr[0]) || vector(0, 0);
     propObj.size = vector(argArr[1]) || vector(1, 1);
+    propObj.radius = vector(argArr[2]) || vector(0, 0);
   } else {
   }
 
@@ -270,6 +275,8 @@ const rectangle = (...argArr) => {
     "y": convertSize(propObj.coord.y),
     "width": convertSize(propObj.size.x),
     "height": convertSize(propObj.size.y),
+    "rx": convertSize(propObj.radius.x),
+    "ry": convertSize(propObj.radius.y),
   };
 
   if (propObj.stroke.color != null) {
@@ -374,6 +381,7 @@ const text = (...argArr) => {
     propObj.face = Object.assign({}, propObj.face, argArr[0].face);
     propObj.font = Object.assign({}, propObj.font, argArr[0].font);
     propObj.align = argArr[0].align || propObj.align;
+    propObj.rotate = argArr[0].rotate || propObj.rotate;
   } else {
   }
 
@@ -381,6 +389,10 @@ const text = (...argArr) => {
     "x": convertSize(propObj.coord.x),
     "y": convertSize(propObj.coord.y),
   };
+
+  if (propObj.rotate != null) {
+    attrObj['rotate'] = propObj.rotate;
+  }
 
   if (propObj.stroke.color != null) {
     attrObj['stroke'] = propObj.stroke.color;
