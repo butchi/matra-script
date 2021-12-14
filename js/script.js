@@ -428,9 +428,9 @@ const text = (...argArr) => {
   return propObj
 }
 
-const $code = $("#code")
+const codeElm = document.getElementById("code")
 
-$code.on("input", evt => {
+const inputHandler = evt => {
   canvas.length = 0
   content.length = 0
   content.push({ canvas })
@@ -438,7 +438,7 @@ $code.on("input", evt => {
   svgContentTxt = ""
 
   try {
-    eval(evt.target.value)
+    eval(codeElm.innerHTML)
     content.push({
 			svg: `<svg width="610" height="377" viewBox="0 0 610 377"><g>${
         svgContentTxt
@@ -449,7 +449,9 @@ $code.on("input", evt => {
   } catch (e) {
     console.log(e)
   }
-})
+}
+
+codeElm.addEventListener("input", inputHandler)
 
 
 const range = (...argArr) => {
@@ -479,7 +481,7 @@ const color = arg => {
   return tinycolor(arg)
 }
 
-$code.val(`[
+codeElm.innerHTML = `[
   red(),
   setStroke({ width: 3, color: "black" }),
   rectangle({ coord: vector(8, 3), size: vector(3, 5) }),
@@ -490,9 +492,8 @@ $code.val(`[
   setStroke({ width: 0 }),
   black(),
   text({ content: "Thanks, world!", coord: vector(5, 1), font: { size: 1 }, align: 0 }),
-]`)
+]`
 
 svgCanvasElm.appendChild(svgElm)
 
-$code.trigger("input")
- 
+inputHandler()
