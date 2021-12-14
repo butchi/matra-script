@@ -206,6 +206,7 @@ const yellow = _ => setFace({
   color: "yellow",
 })
 
+
 const line = (...argArr) => {
   const propObj = {
     coordArr: [vector(0, 0), vector(1, 0)],
