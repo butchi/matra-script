@@ -444,8 +444,8 @@ const inputHandler = evt => {
 			svg: `<svg width="610" height="377" viewBox="0 0 610 377"><g>${
         svgContentTxt
       }</g></svg>`,
-			width: 600,
-			height: 400,
+			width: 610,
+			height: 377,
     })
   } catch (e) {
     console.log(e)
