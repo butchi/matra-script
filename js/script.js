@@ -523,7 +523,16 @@ codeElm.innerHTML = `[
   green(),
   rect([1, 5], [3, 3]),
   blue(),
-  circle({ coord: [6, 3], radius: 1, face: { color: "#ff0" }, stroke: { width: 8 } }),
+  circle({
+    coord: [6, 3],
+    radius: 1,
+    face: {
+      color: "#ff0"
+    },
+    stroke: {
+      width: 8
+    },
+  }),
   circ([6, 6], 1),
   setStroke({ width: 0 }),
   txt(vector(5, 11), "Thanks, world!"),
