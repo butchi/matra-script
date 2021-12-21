@@ -514,16 +514,17 @@ const color = arg => {
 }
 
 codeElm.innerHTML = `[
+  text({ content: "Hello, world!", coord: vector(5, 1), font: { size: 1 }, face: { color: "red" }, align: 0 }),
   red(),
   setStroke({ width: 3, color: "black" }),
   rectangle({ coord: vector(8, 3), size: vector(3, 5) }),
   green(),
-  rectangle([1, 5], [3, 3]),
+  rect([1, 5], [3, 3]),
   blue(),
-  circle([6, 3], 1),
+  circle({ coord: [6, 3], radius: 1, face: { color: "#ff0" } }),
+  circ([6, 6], 1),
   setStroke({ width: 0 }),
-  black(),
-  text({ content: "Thanks, world!", coord: vector(5, 1), font: { size: 1 }, align: 0 }),
+  txt(vector(5, 11), "Thanks, world!"),
 ]`
 
 drawBaseElm.appendChild(canvasElm)
