@@ -444,15 +444,17 @@ const text = (...argArr) => {
 
 const codeElm = document.getElementById("code")
 
-const inputHandler = evt => {
+const inputHandler = (evt = {}) => {
   canvas.length = 0
   content.length = 0
   content.push({ canvas })
   g.innerHTML = ""
   svgContentTxt = ""
 
+  const val = evt.target && evt.target.value || codeElm.innerHTML
+
   try {
-    eval(codeElm.innerHTML)
+    eval(val)
     content.push({
       svg: `<svg width="610" height="377" viewBox="0 0 610 377"><g>${svgContentTxt
         }</g></svg>`,
