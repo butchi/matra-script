@@ -10,10 +10,10 @@ pdfMake.fonts = {
 }
 
 const docDefinition = {
-	content,
-	defaultStyle: {
+  content,
+  defaultStyle: {
     color: "gray",
-	}
+  }
 }
 
 document.getElementById("button-create").addEventListener("click", _evt => {
@@ -180,7 +180,7 @@ const createSvgElement = ({ elementName, attribute, content }) => {
     return `${key}="${attribute[key]}"`
   }).join(" ")}>${content != null ? content : ""}</${elementName}>
   `
- 
+
   ret = { element, text }
 
   return ret
@@ -214,9 +214,9 @@ const line = (...argArr) => {
   }
 
   if (argArr.length === 0) {
-  } else if (argArr.length === 1){
+  } else if (argArr.length === 1) {
     propObj.coordArr = argArr[0].coordArray || [vector(0, 0), vector(1, 0)]
-  } else if (argArr.length === 2){
+  } else if (argArr.length === 2) {
     propObj.coordArr = argArr
   } else {
   }
@@ -257,10 +257,10 @@ const rectangle = (...argArr) => {
   }
 
   if (argArr.length === 0) {
-  } else if (argArr.length === 1){
+  } else if (argArr.length === 1) {
     propObj.coord = vector(argArr[0].coord) || vector(0, 0)
     propObj.size = vector(argArr[0].size) || vector(1, 1)
-  } else if (argArr.length === 2){
+  } else if (argArr.length === 2) {
     propObj.coord = vector(argArr[0]) || vector(0, 0)
     propObj.size = vector(argArr[1]) || vector(1, 1)
   } else {
@@ -306,12 +306,12 @@ const circle = (...argArr) => {
   }
 
   if (argArr.length === 0) {
-  } else if (argArr.length === 1){
+  } else if (argArr.length === 1) {
     propObj.coord = vector(argArr[0].coord) || vector(0, 0)
     propObj.radius = argArr[0].radius || 1
     propObj.stroke = Object.assign({}, propObj.stroke, argArr[0].stroke)
     propObj.face = Object.assign({}, propObj.face, argArr[0].face)
-  } else if (argArr.length === 2){
+  } else if (argArr.length === 2) {
     propObj.coord = vector(argArr[0]) || vector(0, 0)
     propObj.radius = argArr[1] || 1
   } else {
@@ -366,7 +366,7 @@ const text = (...argArr) => {
   }
 
   if (argArr.length === 0) {
-  } else if (argArr.length === 1){
+  } else if (argArr.length === 1) {
     if (content != null) {
       propObj.content = argArr[0].content
     }
@@ -441,11 +441,10 @@ const inputHandler = evt => {
   try {
     eval(codeElm.innerHTML)
     content.push({
-			svg: `<svg width="610" height="377" viewBox="0 0 610 377"><g>${
-        svgContentTxt
-      }</g></svg>`,
-			width: 610,
-			height: 377,
+      svg: `<svg width="610" height="377" viewBox="0 0 610 377"><g>${svgContentTxt
+        }</g></svg>`,
+      width: 610,
+      height: 377,
     })
   } catch (e) {
     console.log(e)
