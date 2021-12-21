@@ -233,19 +233,13 @@ const yellow = _ => setFace({
 })
 
 
-const line = (...argArr) => {
+const line = argLi => {
   const propObj = {
     coordArr: [vector(0, 0), vector(1, 0)],
     stroke: Object.assign({}, stroke),
   }
 
-  if (argArr.length === 0) {
-  } else if (argArr.length === 1) {
-    propObj.coordArr = argArr[0].coordArray || [vector(0, 0), vector(1, 0)]
-  } else if (argArr.length === 2) {
-    propObj.coordArr = argArr
-  } else {
-  }
+  propObj.coordArr = argLi.coordArray || [vector(0, 0), vector(1, 0)]
 
   const attrObj = {
     "x1": convertSize(propObj.coordArr[0].x),
@@ -274,7 +268,13 @@ const line = (...argArr) => {
   return propObj
 }
 
-const rectangle = (...argArr) => {
+const lin = (arr0, arr1) => {
+  const coordArr = [vector(arr0), vector(arr1)]
+
+  return line({ coordArray: coordArr })
+}
+
+const rectangle = argLi => {
   const propObj = {
     coord: vector(0, 0),
     size: vector(1, 1),
@@ -282,15 +282,8 @@ const rectangle = (...argArr) => {
     face: Object.assign({}, face),
   }
 
-  if (argArr.length === 0) {
-  } else if (argArr.length === 1) {
-    propObj.coord = vector(argArr[0].coord) || vector(0, 0)
-    propObj.size = vector(argArr[0].size) || vector(1, 1)
-  } else if (argArr.length === 2) {
-    propObj.coord = vector(argArr[0]) || vector(0, 0)
-    propObj.size = vector(argArr[1]) || vector(1, 1)
-  } else {
-  }
+  propObj.coord = vector(argLi.coord) || vector(0, 0)
+  propObj.size = vector(argLi.size) || vector(1, 1)
 
   const attrObj = {
     "x": convertSize(propObj.coord.x),
@@ -323,7 +316,14 @@ const rectangle = (...argArr) => {
   return propObj
 }
 
-const circle = (...argArr) => {
+const rect = (coord = vector(0, 0), size = vector(1, 1)) => {
+  return rectangle({
+    coord,
+    size,
+  });
+}
+
+const circle = (argLi) => {
   const propObj = {
     coord: vector(0, 0),
     radius: 1,
@@ -331,17 +331,10 @@ const circle = (...argArr) => {
     face: Object.assign({}, face),
   }
 
-  if (argArr.length === 0) {
-  } else if (argArr.length === 1) {
-    propObj.coord = vector(argArr[0].coord) || vector(0, 0)
-    propObj.radius = argArr[0].radius || 1
-    propObj.stroke = Object.assign({}, propObj.stroke, argArr[0].stroke)
-    propObj.face = Object.assign({}, propObj.face, argArr[0].face)
-  } else if (argArr.length === 2) {
-    propObj.coord = vector(argArr[0]) || vector(0, 0)
-    propObj.radius = argArr[1] || 1
-  } else {
-  }
+  propObj.coord = vector(argLi.coord) || vector(0, 0)
+  propObj.radius = argLi.radius || 1
+  propObj.stroke = Object.assign({}, propObj.stroke, argLi.stroke)
+  propObj.face = Object.assign({}, propObj.face, argLi.face)
 
   const attrObj = {
     "cx": convertSize(propObj.coord.x),
@@ -381,7 +374,14 @@ const circle = (...argArr) => {
   return propObj
 }
 
-const text = (...argArr) => {
+const circ = (coord = vector(argArr[0]), radius = 1) => {
+  return circle({
+    coord,
+    radius,
+  })
+}
+
+const text = (argLi) => {
   const propObj = {
     content: "",
     coord: vector(0, 0),
@@ -391,18 +391,14 @@ const text = (...argArr) => {
     align: 0,
   }
 
-  if (argArr.length === 0) {
-  } else if (argArr.length === 1) {
-    if (content != null) {
-      propObj.content = argArr[0].content
-    }
-    propObj.coord = vector(argArr[0].coord) || propObj.coord
-    propObj.stroke = Object.assign({}, propObj.stroke, argArr[0].stroke)
-    propObj.face = Object.assign({}, propObj.face, argArr[0].face)
-    propObj.font = Object.assign({}, propObj.font, argArr[0].font)
-    propObj.align = argArr[0].align || propObj.align
-  } else {
+  if (content != null) {
+    propObj.content = argLi.content
   }
+  propObj.coord = vector(argLi.coord) || propObj.coord
+  propObj.stroke = Object.assign({}, propObj.stroke, argLi.stroke)
+  propObj.face = Object.assign({}, propObj.face, argLi.face)
+  propObj.font = Object.assign({}, propObj.font, argLi.font)
+  propObj.align = argLi.align || propObj.align
 
   const attrObj = {
     "x": convertSize(propObj.coord.x),
@@ -454,6 +450,14 @@ const text = (...argArr) => {
 
   return propObj
 }
+
+const txt = (coord = vector(0, 0), content = null) => {
+  return text({
+    coord,
+    content,
+  })
+}
+
 
 const codeElm = document.getElementById("code")
 
