@@ -20,14 +20,27 @@ document.getElementById("button-create").addEventListener("click", _evt => {
   pdfMake.createPdf(docDefinition).open()
 })
 
+const baseWidth = 610
+const baseHeight = 377
+
 const svgNs = "http://www.w3.org/2000/svg"
 
-const svgCanvasElm = document.querySelector(".svg-canvas")
+const drawBaseElm = document.querySelector(".draw-base")
+drawBaseElm.style.display = "block"
+drawBaseElm.style.position = "relative"
+drawBaseElm.style.width = `${baseWidth}px`
+drawBaseElm.style.height = `${baseHeight}px`
 
 const svgElm = document.createElementNS(svgNs, "svg")
-svgElm.setAttribute("width", "610")
-svgElm.setAttribute("height", "377")
-svgElm.setAttribute("viewBox", "0 0 610 377")
+svgElm.setAttribute("width", baseWidth)
+svgElm.setAttribute("height", baseHeight)
+svgElm.setAttribute("viewBox", `0 0 ${baseWidth} ${baseHeight}`)
+svgElm.style.position = "absolute"
+
+const canvasElm = document.createElement("canvas")
+canvasElm.width = baseWidth
+canvasElm.height = baseHeight
+canvasElm.style.position = "absolute"
 
 const g = document.createElementNS(svgNs, "g")
 svgElm.appendChild(g)
@@ -494,6 +507,7 @@ codeElm.innerHTML = `[
   text({ content: "Thanks, world!", coord: vector(5, 1), font: { size: 1 }, align: 0 }),
 ]`
 
-svgCanvasElm.appendChild(svgElm)
+drawBaseElm.appendChild(canvasElm)
+drawBaseElm.appendChild(svgElm)
 
 inputHandler()
