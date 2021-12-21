@@ -527,10 +527,10 @@ codeElm.innerHTML = `[
     coord: [6, 3],
     radius: 1,
     face: {
-      color: "#ff0"
+      color: "#ff0",
     },
     stroke: {
-      width: 8
+      width: 8,
     },
   }),
   circ([6, 6], 1),
