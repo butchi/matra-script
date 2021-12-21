@@ -47,6 +47,7 @@ svgElm.appendChild(g)
 
 let svgContentTxt = ""
 
+// 一応3次元以上も見越している
 const vector = (...argArr) => {
   if (argArr.length === 0) {
     return vector(0, 0)
@@ -54,18 +55,30 @@ const vector = (...argArr) => {
     const arg = argArr[0]
 
     if (typeof arg === "number") {
-      return vector(arg, 0)
+      return vector({
+        x: arg,
+        y: 0,
+      })
     } else if (arg instanceof Array) {
-      return vector(arg[0], arg[1])
+      return vec(...arg)
     } else {
       return arg
     }
   } else if (argArr.length >= 2) {
     return ({
-      x: argArr[0],
-      y: argArr[1],
+      x: argArr[0] || 0,
+      y: argArr[1] || 0,
     })
   }
+}
+
+const vec = (x = 0, y = 0, z = 0, w = 0) => {
+  return ({
+    x,
+    y,
+    z,
+    w,
+  })
 }
 
 const angleVector = (...argArr) => {
