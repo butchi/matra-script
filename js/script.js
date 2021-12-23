@@ -144,50 +144,54 @@ const convertSize = arg => {
   }
 }
 
-const setUnit = arg => {
-  unit = arg
 
-  return unit
-}
+const setFunctionList = {
+  setUnit: arg => {
+    unit = arg
 
-const setFont = arg => {
-  const { size, family } = arg
+    return unit
+  },
 
-  font.size = size
-  font.family = family
+  setFont: arg => {
+    const { size, family } = arg
 
-  return font
-}
+    font.size = size
+    font.family = family
 
-const setStroke = arg => {
-  if (arg === undefined) {
-    stroke.color = "black"
-    stroke.width = 1
-  } else if (arg == null) {
-    stroke.color = null
-    stroke.width = null
-  } else {
-    const { color, width } = arg
+    return font
+  },
 
-    if (color != null) {
-      stroke.color = color
+  setStroke: arg => {
+    if (arg === undefined) {
+      stroke.color = "black"
+      stroke.width = 1
+    } else if (arg == null) {
+      stroke.color = null
+      stroke.width = null
+    } else {
+      const { color, width } = arg
+
+      if (color != null) {
+        stroke.color = color
+      }
+
+      if (width != null) {
+        stroke.width = width
+      }
     }
 
-    if (width != null) {
-      stroke.width = width
-    }
-  }
+    return stroke
+  },
 
-  return stroke
+  setFace: arg => {
+    const { color } = arg
+
+    face.color = color
+
+    return face
+  },
 }
 
-const setFace = arg => {
-  const { color } = arg
-
-  face.color = color
-
-  return face
-}
 
 const createSvgElement = ({ elementName, attribute, content }) => {
   let ret
@@ -213,249 +217,251 @@ const createSvgElement = ({ elementName, attribute, content }) => {
 }
 
 
-const black = _ => setFace({
-  color: "black",
-})
-const white = _ => setFace({
-  color: "white",
-})
-const red = _ => setFace({
-  color: "red",
-})
-const green = _ => setFace({
-  color: "green",
-})
-const blue = _ => setFace({
-  color: "blue",
-})
-const yellow = _ => setFace({
-  color: "yellow",
-})
-
-
-const line = argLi => {
-  const propObj = {
-    coordArr: [vector(0, 0), vector(1, 0)],
-    stroke: Object.assign({}, stroke),
-  }
-
-  propObj.coordArr = argLi.coordArray || [vector(0, 0), vector(1, 0)]
-
-  const attrObj = {
-    "x1": convertSize(propObj.coordArr[0].x),
-    "y1": convertSize(propObj.coordArr[0].y),
-    "x2": convertSize(propObj.coordArr[1].x),
-    "y2": convertSize(propObj.coordArr[1].y),
-  }
-
-  if (propObj.stroke.color != null) {
-    attrObj["stroke"] = propObj.stroke.color
-  }
-
-  if (propObj.stroke.width != null) {
-    attrObj["stroke-width"] = propObj.stroke.width
-  }
-
-  const { element: svgElm, text: svgTxt } = createSvgElement({
-    elementName: "line",
-    attribute: attrObj,
-  })
-
-  svgContentTxt += svgTxt
-
-  g.appendChild(svgElm)
-
-  return propObj
+const colorFunctionList = {
 }
 
-const lin = (arr0, arr1) => {
-  const coordArr = [vector(arr0), vector(arr1)]
+const colorArr = [
+  "black",
+  "white",
+  "red",
+  "green",
+  "blue",
+  "yellow",
+]
 
-  return line({ coordArray: coordArr })
-}
-
-const rectangle = argLi => {
-  const propObj = {
-    coord: vector(0, 0),
-    size: vector(1, 1),
-    stroke: Object.assign({}, stroke),
-    face: Object.assign({}, face),
-  }
-
-  propObj.coord = vector(argLi.coord) || vector(0, 0)
-  propObj.size = vector(argLi.size) || vector(1, 1)
-
-  const attrObj = {
-    "x": convertSize(propObj.coord.x),
-    "y": convertSize(propObj.coord.y),
-    "width": convertSize(propObj.size.x),
-    "height": convertSize(propObj.size.y),
-  }
-
-  if (propObj.stroke.color != null) {
-    attrObj["stroke"] = propObj.stroke.color
-  }
-
-  if (propObj.stroke.width != null) {
-    attrObj["stroke-width"] = propObj.stroke.width
-  }
-
-  if (propObj.face.color != null) {
-    attrObj["fill"] = propObj.face.color
-  }
-
-  const { element: svgElm, text: svgTxt } = createSvgElement({
-    elementName: "rect",
-    attribute: attrObj,
-  })
-
-  svgContentTxt += svgTxt
-
-  g.appendChild(svgElm)
-
-  return propObj
-}
-
-const rect = (coord = vector(0, 0), size = vector(1, 1)) => {
-  return rectangle({
-    coord,
-    size,
+colorArr.forEach(color => {
+  colorFunctionList[color] = _ => setFunctionList.setFace({
+    color,
   });
+})
+
+const drawFunctionList = {
+  line: argLi => {
+    const propObj = {
+      coordArr: [vector(0, 0), vector(1, 0)],
+      stroke: Object.assign({}, stroke),
+    }
+
+    propObj.coordArr = argLi.coordArray || [vector(0, 0), vector(1, 0)]
+
+    const attrObj = {
+      "x1": convertSize(propObj.coordArr[0].x),
+      "y1": convertSize(propObj.coordArr[0].y),
+      "x2": convertSize(propObj.coordArr[1].x),
+      "y2": convertSize(propObj.coordArr[1].y),
+    }
+
+    if (propObj.stroke.color != null) {
+      attrObj["stroke"] = propObj.stroke.color
+    }
+
+    if (propObj.stroke.width != null) {
+      attrObj["stroke-width"] = propObj.stroke.width
+    }
+
+    const { element: svgElm, text: svgTxt } = createSvgElement({
+      elementName: "line",
+      attribute: attrObj,
+    })
+
+    svgContentTxt += svgTxt
+
+    g.appendChild(svgElm)
+
+    return propObj
+  },
+
+  rectangle: argLi => {
+    const propObj = {
+      coord: vector(0, 0),
+      size: vector(1, 1),
+      stroke: Object.assign({}, stroke),
+      face: Object.assign({}, face),
+    }
+
+    propObj.coord = vector(argLi.coord) || vector(0, 0)
+    propObj.size = vector(argLi.size) || vector(1, 1)
+
+    const attrObj = {
+      "x": convertSize(propObj.coord.x),
+      "y": convertSize(propObj.coord.y),
+      "width": convertSize(propObj.size.x),
+      "height": convertSize(propObj.size.y),
+    }
+
+    if (propObj.stroke.color != null) {
+      attrObj["stroke"] = propObj.stroke.color
+    }
+
+    if (propObj.stroke.width != null) {
+      attrObj["stroke-width"] = propObj.stroke.width
+    }
+
+    if (propObj.face.color != null) {
+      attrObj["fill"] = propObj.face.color
+    }
+
+    const { element: svgElm, text: svgTxt } = createSvgElement({
+      elementName: "rect",
+      attribute: attrObj,
+    })
+
+    svgContentTxt += svgTxt
+
+    g.appendChild(svgElm)
+
+    return propObj
+  },
+
+  circle: argLi => {
+    const propObj = {
+      coord: vector(0, 0),
+      radius: 1,
+      stroke: Object.assign({}, stroke),
+      face: Object.assign({}, face),
+    }
+
+    propObj.coord = vector(argLi.coord) || vector(0, 0)
+    propObj.radius = argLi.radius || 1
+    propObj.stroke = Object.assign({}, propObj.stroke, argLi.stroke)
+    propObj.face = Object.assign({}, propObj.face, argLi.face)
+
+    const attrObj = {
+      "cx": convertSize(propObj.coord.x),
+      "cy": convertSize(propObj.coord.y),
+      "r": convertSize(propObj.radius),
+    }
+
+    if (propObj.stroke.color != null) {
+      attrObj["stroke"] = propObj.stroke.color
+    }
+
+    if (propObj.stroke.width != null) {
+      attrObj["stroke-width"] = propObj.stroke.width
+    }
+
+    if (propObj.face.color != null) {
+      attrObj["fill"] = propObj.face.color
+    }
+
+    const pdfObj = {
+      type: "ellipse",
+      x: convertSize(propObj.coord.x),
+      y: convertSize(propObj.coord.y),
+      r1: convertSize(propObj.radius),
+      r2: convertSize(propObj.radius),
+    }
+
+    const { element: svgElm, text: svgTxt } = createSvgElement({
+      elementName: "circle",
+      attribute: attrObj,
+    })
+
+    svgContentTxt += svgTxt
+
+    g.appendChild(svgElm)
+
+    return propObj
+  },
+
+  text: argLi => {
+    const propObj = {
+      content: "",
+      coord: vector(0, 0),
+      font: Object.assign({}, font),
+      stroke: Object.assign({}, stroke),
+      face: Object.assign({}, face),
+      align: 0,
+    }
+
+    if (content != null) {
+      propObj.content = argLi.content
+    }
+    propObj.coord = vector(argLi.coord) || propObj.coord
+    propObj.stroke = Object.assign({}, propObj.stroke, argLi.stroke)
+    propObj.face = Object.assign({}, propObj.face, argLi.face)
+    propObj.font = Object.assign({}, propObj.font, argLi.font)
+    propObj.align = argLi.align || propObj.align
+
+    const attrObj = {
+      "x": convertSize(propObj.coord.x),
+      "y": convertSize(propObj.coord.y),
+    }
+
+    if (propObj.stroke.color != null) {
+      attrObj["stroke"] = propObj.stroke.color
+    }
+
+    if (propObj.stroke.width != null) {
+      attrObj["stroke-width"] = convertSize(propObj.stroke.width)
+    }
+
+    if (propObj.face.color != null) {
+      attrObj["fill"] = propObj.face.color
+    }
+
+    if (propObj.font.family != null) {
+      attrObj["font-family"] = propObj.font.family
+    }
+
+    if (propObj.font.size != null) {
+      attrObj["font-size"] = convertSize(propObj.font.size)
+    }
+
+    if (propObj.align != null) {
+      attrObj["text-anchor"] = {
+        "-1": "start",
+        "0": "middle",
+        "1": "end",
+      }[(propObj.align + 4) % 3 - 1]
+      attrObj["dominant-baseline"] = {
+        "-1": "text-top",
+        "0": "middle",
+        "1": "baseline",
+      }[Math.floor((propObj.align + 1) / 3)]
+    }
+
+    const { element: svgElm, text: svgTxt } = createSvgElement({
+      elementName: "text",
+      attribute: attrObj,
+      content: propObj.content,
+    })
+
+    svgContentTxt += svgTxt
+
+    g.appendChild(svgElm)
+
+    return propObj
+  }
 }
 
-const circle = (argLi) => {
-  const propObj = {
-    coord: vector(0, 0),
-    radius: 1,
-    stroke: Object.assign({}, stroke),
-    face: Object.assign({}, face),
-  }
+const drawFuncLi = {
+  lin: (arr0, arr1) => {
+    const coordArr = [vector(arr0), vector(arr1)]
 
-  propObj.coord = vector(argLi.coord) || vector(0, 0)
-  propObj.radius = argLi.radius || 1
-  propObj.stroke = Object.assign({}, propObj.stroke, argLi.stroke)
-  propObj.face = Object.assign({}, propObj.face, argLi.face)
+    return drawFunctionList.line({ coordArray: coordArr })
+  },
 
-  const attrObj = {
-    "cx": convertSize(propObj.coord.x),
-    "cy": convertSize(propObj.coord.y),
-    "r": convertSize(propObj.radius),
-  }
+  rect: (coord = vector(0, 0), size = vector(1, 1)) => {
+    return drawFunctionList.rectangle({
+      coord,
+      size,
+    });
+  },
 
-  if (propObj.stroke.color != null) {
-    attrObj["stroke"] = propObj.stroke.color
-  }
+  circ: (coord = vector(argArr[0]), radius = 1) => {
+    return drawFunctionList.circle({
+      coord,
+      radius,
+    })
+  },
 
-  if (propObj.stroke.width != null) {
-    attrObj["stroke-width"] = propObj.stroke.width
-  }
-
-  if (propObj.face.color != null) {
-    attrObj["fill"] = propObj.face.color
-  }
-
-  const pdfObj = {
-    type: "ellipse",
-    x: convertSize(propObj.coord.x),
-    y: convertSize(propObj.coord.y),
-    r1: convertSize(propObj.radius),
-    r2: convertSize(propObj.radius),
-  }
-
-  const { element: svgElm, text: svgTxt } = createSvgElement({
-    elementName: "circle",
-    attribute: attrObj,
-  })
-
-  svgContentTxt += svgTxt
-
-  g.appendChild(svgElm)
-
-  return propObj
-}
-
-const circ = (coord = vector(argArr[0]), radius = 1) => {
-  return circle({
-    coord,
-    radius,
-  })
-}
-
-const text = (argLi) => {
-  const propObj = {
-    content: "",
-    coord: vector(0, 0),
-    font: Object.assign({}, font),
-    stroke: Object.assign({}, stroke),
-    face: Object.assign({}, face),
-    align: 0,
-  }
-
-  if (content != null) {
-    propObj.content = argLi.content
-  }
-  propObj.coord = vector(argLi.coord) || propObj.coord
-  propObj.stroke = Object.assign({}, propObj.stroke, argLi.stroke)
-  propObj.face = Object.assign({}, propObj.face, argLi.face)
-  propObj.font = Object.assign({}, propObj.font, argLi.font)
-  propObj.align = argLi.align || propObj.align
-
-  const attrObj = {
-    "x": convertSize(propObj.coord.x),
-    "y": convertSize(propObj.coord.y),
-  }
-
-  if (propObj.stroke.color != null) {
-    attrObj["stroke"] = propObj.stroke.color
-  }
-
-  if (propObj.stroke.width != null) {
-    attrObj["stroke-width"] = convertSize(propObj.stroke.width)
-  }
-
-  if (propObj.face.color != null) {
-    attrObj["fill"] = propObj.face.color
-  }
-
-  if (propObj.font.family != null) {
-    attrObj["font-family"] = propObj.font.family
-  }
-
-  if (propObj.font.size != null) {
-    attrObj["font-size"] = convertSize(propObj.font.size)
-  }
-
-  if (propObj.align != null) {
-    attrObj["text-anchor"] = {
-      "-1": "start",
-      "0": "middle",
-      "1": "end",
-    }[(propObj.align + 4) % 3 - 1]
-    attrObj["dominant-baseline"] = {
-      "-1": "text-top",
-      "0": "middle",
-      "1": "baseline",
-    }[Math.floor((propObj.align + 1) / 3)]
-  }
-
-  const { element: svgElm, text: svgTxt } = createSvgElement({
-    elementName: "text",
-    attribute: attrObj,
-    content: propObj.content,
-  })
-
-  svgContentTxt += svgTxt
-
-  g.appendChild(svgElm)
-
-  return propObj
-}
-
-const txt = (coord = vector(0, 0), content = null) => {
-  return text({
-    coord,
-    content,
-  })
+  txt: (coord = vector(0, 0), content = null) => {
+    return drawFunctionList.text({
+      coord,
+      content,
+    })
+  },
 }
 
 
@@ -515,7 +521,13 @@ const color = arg => {
   return tinycolor(arg)
 }
 
-codeElm.innerHTML = `[
+codeElm.innerHTML = `
+const { setStroke } = setFunctionList;
+const { red, green, blue, yellow } = colorFunctionList;
+const { line, rectangle, circle, text } = drawFunctionList;
+const { lin, rect, circ, txt } = drawFuncLi;
+
+[
   text({ content: "Hello, world!", coord: vector(5, 1), font: { size: 1 }, face: { color: "red" }, align: 0 }),
   red(),
   setStroke({ width: 3, color: "black" }),
@@ -536,7 +548,8 @@ codeElm.innerHTML = `[
   circ([6, 6], 1),
   setStroke({ width: 0 }),
   txt(vector(5, 11), "Thanks, world!"),
-]`
+]
+`.slice(1)
 
 drawBaseElm.appendChild(canvasElm)
 drawBaseElm.appendChild(svgElm)
