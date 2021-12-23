@@ -220,18 +220,18 @@ const createSvgElement = ({ elementName, attribute, content }) => {
 const colorFunctionList = {
 }
 
-const colorArr = [
-  "black",
-  "white",
-  "red",
-  "green",
-  "blue",
-  "yellow",
-]
+const colorLi = {
+  "black": "black",
+  "white": "white",
+  "red": "red",
+  "green": "green",
+  "blue": "blue",
+  "yellow": "yellow",
+}
 
-colorArr.forEach(color => {
-  colorFunctionList[color] = _ => setFunctionList.setFace({
-    color,
+Object.keys(colorLi).forEach(key => {
+  colorFunctionList[key] = _ => setFunctionList.setFace({
+    color: colorLi[key],
   });
 })
 
