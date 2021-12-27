@@ -22,8 +22,8 @@ btnCreateElm.addEventListener("click", _evt => {
 })
 mdc.ripple.MDCRipple.attachTo(btnCreateElm);
 
-const baseWidth = 610
-const baseHeight = 377
+const baseWidth = 377
+const baseHeight = 610
 
 const svgNs = "http://www.w3.org/2000/svg"
 
