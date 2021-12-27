@@ -12,10 +12,11 @@
 
 <body>
   <div class="wrapper">
-    <textarea id="code" rows="25" cols="85"></textarea>
-    <div class="draw-base"></div>
-    <button id="button-create">PDF生成</button>
-    <button id="button-create" class="mdc-button mdc-button--raised">
+    <div style="display: flex; width: 100%;">
+      <textarea id="code" style="width: 45%;"></textarea>
+      <div class="draw-base" style="width: 55%;"></div>
+    </div>
+    <button id="button-create" class="mdc-button mdc-button--raised" style="margin-top: 15px;">
       <div class="mdc-button__ripple"></div>
       <span class="mdc-button__label">PDF生成</span>
     </button>
