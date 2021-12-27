@@ -16,9 +16,11 @@ const docDefinition = {
   }
 }
 
-document.getElementById("button-create").addEventListener("click", _evt => {
+const btnCreateElm = document.getElementById("button-create")
+btnCreateElm.addEventListener("click", _evt => {
   pdfMake.createPdf(docDefinition).open()
 })
+mdc.ripple.MDCRipple.attachTo(btnCreateElm);
 
 const baseWidth = 610
 const baseHeight = 377
