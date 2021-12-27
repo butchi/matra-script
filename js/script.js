@@ -63,6 +63,8 @@ const vector = (...argArr) => {
       })
     } else if (arg instanceof Array) {
       return vec(...arg)
+    } else if (arg instanceof Object) {
+      return vector(arg.vector)
     } else {
       return arg
     }
@@ -437,6 +439,20 @@ const drawFunctionList = {
   }
 }
 
+const setFuncLi = {
+  font: (size, family = null) => {
+    return setFunctionList.setFont({ size, family })
+  },
+
+  stroke: (color, width = null) => {
+    return setFunctionList.setStroke({ color, width })
+  },
+
+  face: color => {
+    return setFunctionList.setFace({ color })
+  },
+}
+
 const drawFuncLi = {
   lin: (arr0, arr1) => {
     const coordArr = [vector(arr0), vector(arr1)]
@@ -466,10 +482,34 @@ const drawFuncLi = {
   },
 }
 
+const funcLi = Object.assign(setFunctionList, colorFunctionList, drawFunctionList, setFuncLi, drawFuncLi)
 
-const codeElm = document.getElementById("code")
+
+const evalJSON = seq => {
+  seq.map(item => {
+    Object.keys(item).map(key => {
+      const f = funcLi[key]
+      const prop = item[key]
+
+      if (["lin", "rect", "circ", "txt"].includes(key)) {
+        return f(...prop)
+      } else {
+        return f(prop)
+      }
+    })
+  })
+}
+
+
+const codeElm = document.getElementById("matra-script-code")
 codeElm.style.fontFamily = `"Courier New", monospace`
 codeElm.style.fontSize = `${11}px`
+
+
+const jsonElm = document.getElementById("matra-json")
+jsonElm.style.fontFamily = `"Courier New", monospace`
+jsonElm.style.fontSize = `${11}px`
+
 
 const inputHandler = (evt = {}) => {
   canvas.length = 0
@@ -481,7 +521,11 @@ const inputHandler = (evt = {}) => {
   const val = evt.target && evt.target.value || codeElm.innerHTML
 
   try {
-    eval(val)
+    const obj = jsyaml.load(val)
+    jsonElm.innerHTML = JSON5.stringify(obj, null, 2)
+
+    evalJSON(obj)
+
     content.push({
       svg: `<svg width="610" height="377" viewBox="0 0 610 377"><g>${svgContentTxt
         }</g></svg>`,
@@ -524,33 +568,39 @@ const color = arg => {
 }
 
 codeElm.innerHTML = `
-const { setStroke } = setFunctionList;
-const { red, green, blue, yellow } = colorFunctionList;
-const { line, rectangle, circle, text } = drawFunctionList;
-const { lin, rect, circ, txt } = drawFuncLi;
-
-[
-  text({ content: "Hello, world!", coord: vector(5, 1), font: { size: 1 }, face: { color: "red" }, align: 0 }),
-  red(),
-  setStroke({ width: 3, color: "black" }),
-  rectangle({ coord: vector(8, 3), size: vector(3, 5) }),
-  green(),
-  rect([1, 5], [3, 3]),
-  blue(),
-  circle({
-    coord: [6, 3],
-    radius: 1,
-    face: {
-      color: "#ff0",
-    },
-    stroke: {
-      width: 8,
-    },
-  }),
-  circ([6, 6], 1),
-  setStroke({ width: 0 }),
-  txt(vector(5, 11), "Thanks, world!"),
-]
+- text:
+    content: "Hello, world!"
+    coord:
+      vector: [5, 1]
+    font: { size: 1 }
+    face: { color: red }
+    align: 0
+- setFace:
+    color:
+      red
+- setStroke:
+    width: 3
+    color: black
+- rectangle:
+    coord:
+      vector: [8, 3]
+    size:
+      vector: [3, 5]
+- setFace:
+    color: green
+- rect: [[1, 5], [3, 3]]
+- face: blue
+- circle:
+    coord: [6, 3]
+    radius: 1
+    face:
+      color: "#ff0"
+    stroke:
+      width: 8
+- circ: [[6, 6], 1]
+- setStroke:
+    width: 0
+- txt: [vector: [5, 11], "Thanks, world!"]
 `.slice(1)
 
 drawBaseElm.appendChild(canvasElm)
