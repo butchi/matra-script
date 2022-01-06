@@ -12,10 +12,55 @@
 
 <body>
   <div class="wrapper">
+    <div class="mdc-tab-bar" role="tablist">
+      <div class="mdc-tab-scroller">
+        <div class="mdc-tab-scroller__scroll-area">
+          <div class="mdc-tab-scroller__scroll-content">
+            <button class="mdc-tab" role="tab" aria-selected="true" tabindex="0" data-tab-label="json">
+              <span class="mdc-tab__content">
+                <span class="mdc-tab__icon material-icons" aria-hidden="true">text_snippet</span>
+                <span class="mdc-tab__text-label">JSON</span>
+              </span>
+              <span class="mdc-tab-indicator mdc-tab-indicator--active">
+                <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+              </span>
+              <span class="mdc-tab__ripple"></span>
+            </button>
+            <button class="mdc-tab" role="tab" aria-selected="true" tabindex="1" data-tab-label="yaml">
+              <span class="mdc-tab__content">
+                <span class="mdc-tab__icon material-icons" aria-hidden="true">text_snippet</span>
+                <span class="mdc-tab__text-label">YAML</span>
+              </span>
+              <span class="mdc-tab-indicator mdc-tab-indicator--active">
+                <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+              </span>
+              <span class="mdc-tab__ripple"></span>
+            </button>
+            <button class="mdc-tab mdc-tab--active" role="tab" aria-selected="true" tabindex="2" data-tab-label="svg">
+              <span class="mdc-tab__content">
+                <span class="mdc-tab__icon material-icons" aria-hidden="true">brush</span>
+                <span class="mdc-tab__text-label">SVG</span>
+              </span>
+              <span class="mdc-tab-indicator mdc-tab-indicator--active">
+                <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+              </span>
+              <span class="mdc-tab__ripple"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div style="display: flex; width: 100%;">
       <textarea id="matra-script-code" style="width: 33%;"></textarea>
-      <textarea id="matra-json" style="width: 33%;"></textarea>
-      <div class="draw-base" style="width: 34%;"></div>
+
+      <div style="width: 66%;">
+        <textarea id="matra-json" data-tab-content data-tab-label="json"
+          style="width: 100%; height: 610px; display: none;"></textarea>
+        <textarea id="matra-yaml" data-tab-content data-tab-label="yaml"
+          style="width: 100%; height: 610px; display: none;"></textarea>
+        <div class="draw-base" data-tab-content data-tab-label="svg"></div>
+      </div>
     </div>
     <button id="button-create" class="mdc-button mdc-button--raised" style="margin-top: 15px;">
       <div class="mdc-button__ripple"></div>

@@ -22,13 +22,30 @@ btnCreateElm.addEventListener("click", _evt => {
 })
 mdc.ripple.MDCRipple.attachTo(btnCreateElm);
 
+
+const tabMenuElmArr = document.querySelectorAll(".mdc-tab")
+const tabContentElmArr = document.querySelectorAll("[data-tab-content]")
+
+tabMenuElmArr.forEach(tabMenuElm => {
+  const label = tabMenuElm.getAttribute("data-tab-label")
+
+  tabMenuElm.addEventListener('click', _evt => {
+    tabContentElmArr.forEach((tabContentElm) => {
+      if (tabContentElm.getAttribute("data-tab-label") === label) {
+        tabContentElm.style.display = "block"
+      } else {
+        tabContentElm.style.display = "none"
+      }
+    })
+  })
+})
+
 const baseWidth = 377
 const baseHeight = 610
 
 const svgNs = "http://www.w3.org/2000/svg"
 
 const drawBaseElm = document.querySelector(".draw-base")
-drawBaseElm.style.display = "block"
 drawBaseElm.style.position = "relative"
 drawBaseElm.style.width = `${baseWidth}px`
 drawBaseElm.style.height = `${baseHeight}px`
@@ -511,6 +528,11 @@ jsonElm.style.fontFamily = `"Courier New", monospace`
 jsonElm.style.fontSize = `${11}px`
 
 
+const yamlElm = document.getElementById("matra-yaml")
+yamlElm.style.fontFamily = `"Courier New", monospace`
+yamlElm.style.fontSize = `${11}px`
+
+
 const inputHandler = (evt = {}) => {
   canvas.length = 0
   content.length = 0
@@ -523,6 +545,7 @@ const inputHandler = (evt = {}) => {
   try {
     const obj = jsyaml.load(val)
     jsonElm.innerHTML = JSON5.stringify(obj, null, 2)
+    yamlElm.innerHTML = jsyaml.dump(obj)
 
     evalJSON(obj)
 
@@ -567,7 +590,7 @@ const color = arg => {
   return tinycolor(arg)
 }
 
-codeElm.innerHTML = `
+const exampleYaml = `
 - text:
     content: "Hello, world!"
     coord:
@@ -602,6 +625,39 @@ codeElm.innerHTML = `
     width: 0
 - txt: [vector: [5, 11], "Thanks, world!"]
 `.slice(1)
+
+const exampleJs = `
+const { setStroke } = setFunctionList;
+const { red, green, blue, yellow } = colorFunctionList;
+const { line, rectangle, circle, text } = drawFunctionList;
+const { lin, rect, circ, txt } = drawFuncLi;
+
+[
+  text({ content: "Hello, world!", coord: vector(5, 1), font: { size: 1 }, face: { color: "red" }, align: 0 }),
+  red(),
+  setStroke({ width: 3, color: "black" }),
+  rectangle({ coord: vector(8, 3), size: vector(3, 5) }),
+  green(),
+  rect([1, 5], [3, 3]),
+  blue(),
+  circle({
+    coord: [6, 3],
+    radius: 1,
+    face: {
+      color: "#ff0",
+    },
+    stroke: {
+      width: 8,
+    },
+  }),
+  circ([6, 6], 1),
+  setStroke({ width: 0 }),
+  txt(vector(5, 11), "Thanks, world!"),
+]
+`.slice(1)
+
+
+codeElm.innerHTML = exampleYaml
 
 drawBaseElm.appendChild(canvasElm)
 drawBaseElm.appendChild(svgElm)
