@@ -259,17 +259,35 @@ Object.keys(colorLi).forEach(key => {
 const drawFunctionList = {
   line: argLi => {
     const propObj = {
-      coordArr: [vector(0, 0), vector(1, 0)],
+      coordArray: [vector(0, 0), vector(1, 0)],
       stroke: Object.assign({}, stroke),
+      face: Object.assign({}, face),
     }
 
-    propObj.coordArr = argLi.coordArray || [vector(0, 0), vector(1, 0)]
+    propObj.cArr = argLi.coordArray.map(coord => vector(coord)) || [vector(0, 0), vector(1, 0)]
 
-    const attrObj = {
-      "x1": convertSize(propObj.coordArr[0].x),
-      "y1": convertSize(propObj.coordArr[0].y),
-      "x2": convertSize(propObj.coordArr[1].x),
-      "y2": convertSize(propObj.coordArr[1].y),
+    let elmName
+    let attrObj
+
+    if (propObj.cArr.length < 3) {
+      elmName = "line"
+
+      attrObj = {
+        "x1": convertSize(propObj.cArr[0].x),
+        "y1": convertSize(propObj.cArr[0].y),
+        "x2": convertSize(propObj.cArr[1].x),
+        "y2": convertSize(propObj.cArr[1].y),
+      }
+    } else {
+      elmName = "polygon"
+
+      attrObj = {
+        "points": propObj.cArr.map(c => `${convertSize(c.x)},${convertSize(c.y)}`).join(" "),
+      }
+
+      if (propObj.face.color != null) {
+        attrObj["fill"] = propObj.face.color
+      }
     }
 
     if (propObj.stroke.color != null) {
@@ -281,7 +299,7 @@ const drawFunctionList = {
     }
 
     const { element: svgElm, text: svgTxt } = createSvgElement({
-      elementName: "line",
+      elementName: elmName,
       attribute: attrObj,
     })
 
@@ -604,6 +622,10 @@ const exampleYaml = `
 - setStroke:
     width: 3
     color: black
+- line:
+    coordArray:
+      - vector: [1, 3]
+      - vector: [3, 3]
 - rectangle:
     coord:
       vector: [8, 3]
@@ -621,9 +643,14 @@ const exampleYaml = `
     stroke:
       width: 8
 - circ: [[6, 6], 1]
+- line:
+    coordArray:
+      - vector: [1, 11]
+      - vector: [3, 11]
+      - vector: [3, 13]
 - setStroke:
     width: 0
-- txt: [vector: [5, 11], "Thanks, world!"]
+- txt: [vector: [5, 15], "Thanks, world!"]
 `.slice(1)
 
 const exampleJs = `
