@@ -383,14 +383,6 @@ const drawFunctionList = {
       attrObj["fill"] = propObj.face.color
     }
 
-    const pdfObj = {
-      type: "ellipse",
-      x: convertSize(propObj.coord.x),
-      y: convertSize(propObj.coord.y),
-      r1: convertSize(propObj.radius),
-      r2: convertSize(propObj.radius),
-    }
-
     const { element: svgElm, text: svgTxt } = createSvgElement({
       elementName: "circle",
       attribute: attrObj,
