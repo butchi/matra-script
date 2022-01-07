@@ -264,25 +264,33 @@ const drawFunctionList = {
       face: Object.assign({}, face),
     }
 
-    propObj.cArr = argLi.coordArray.map(coord => vector(coord)) || [vector(0, 0), vector(1, 0)]
+    propObj.coordArray = argLi.coordArray.map(coord => vector(coord)) || [vector(0, 0), vector(1, 0)]
 
     let elmName
     let attrObj
 
-    if (propObj.cArr.length < 3) {
+    if (propObj.coordArray.length < 3) {
       elmName = "line"
 
       attrObj = {
-        "x1": convertSize(propObj.cArr[0].x),
-        "y1": convertSize(propObj.cArr[0].y),
-        "x2": convertSize(propObj.cArr[1].x),
-        "y2": convertSize(propObj.cArr[1].y),
+        "x1": convertSize(propObj.coordArray[0].x),
+        "y1": convertSize(propObj.coordArray[0].y),
+        "x2": convertSize(propObj.coordArray[1].x),
+        "y2": convertSize(propObj.coordArray[1].y),
       }
     } else {
-      elmName = "polygon"
+      const len = propObj.coordArray.length
+
+      if (propObj.coordArray[0].x === propObj.coordArray[len - 1].x && propObj.coordArray[0].y === propObj.coordArray[len - 1].y) {
+        elmName = "polygon"
+
+        propObj.coordArray.length = len - 1
+      } else {
+        elmName = "polyline"
+      }
 
       attrObj = {
-        "points": propObj.cArr.map(c => `${convertSize(c.x)},${convertSize(c.y)}`).join(" "),
+        "points": propObj.coordArray.map(c => `${convertSize(c.x)},${convertSize(c.y)}`).join(" "),
       }
 
       if (propObj.face.color != null) {
@@ -481,10 +489,8 @@ const setFuncLi = {
 }
 
 const drawFuncLi = {
-  lin: (arr0, arr1) => {
-    const coordArr = [vector(arr0), vector(arr1)]
-
-    return drawFunctionList.line({ coordArray: coordArr })
+  lin: (...coordArray) => {
+    return drawFunctionList.line({ coordArray })
   },
 
   rect: (coord = vector(0, 0), size = vector(1, 1)) => {
@@ -640,6 +646,11 @@ const exampleYaml = `
       - vector: [1, 11]
       - vector: [3, 11]
       - vector: [3, 13]
+- lin:
+  - [6, 11]
+  - [7, 13]
+  - [8, 11]
+  - [6, 11]
 - setStroke:
     width: 0
 - txt: [vector: [5, 15], "Thanks, world!"]
