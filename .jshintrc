@@ -1,0 +1,21 @@
+{
+  "strict": false,
+  "esversion": 6,
+  "asi": true,
+  "indent": 4,
+  "unused": false,
+  "undef": true,
+  "trailingcomma": true,
+  "quotmark": "double",
+  "browser": true,
+  "devel": true,
+  "debug": true,
+  "globals": {
+    "JSON5": false,
+    "jsyaml": false,
+    "mdc": false,
+    "pdfMake": false,
+    "tinycolor": false
+  },
+  "eqnull": true
+}
