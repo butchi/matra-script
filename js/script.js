@@ -373,6 +373,22 @@ const execFuncLi = {
 
     g.appendChild(svgElm)
   },
+
+  group: propObj => {
+    const attrObj = {
+      "transform": propObj.transform,
+    }
+
+    const { element: svgElm, text: svgTxt } = createSvgElement({
+      elementName: "g",
+      attribute: attrObj,
+      content: propObj.content,
+    })
+
+    svgContentTxt += svgTxt
+
+    g.appendChild(svgElm)
+  },
 }
 
 
@@ -556,6 +572,23 @@ const drawFunctionList = {
       text: propObj,
     })
   },
+
+  group: argLi => {
+    const propObj = {
+      transform: "",
+      content: "",
+    }
+
+    propObj.transform = argLi.transform || propObj.transform
+
+    if (content != null) {
+      propObj.content = argLi.content
+    }
+
+    return ({
+      group: propObj,
+    })
+  },
 }
 
 const setFuncLi = {
@@ -598,6 +631,14 @@ const drawFuncLi = {
   txt: (coord = vector(0, 0), content = null) => {
     return drawFunctionList.text({
       coord,
+      content,
+    })
+  },
+
+  grp: (content = null, coord = vector(0, 0), size = vector(1, 1)) => {
+    return drawFunctionList.group({
+      width,
+      height,
       content,
     })
   },
@@ -723,8 +764,8 @@ const color = arg => {
 const exampleStr = `
 const { setStroke } = setFunctionList;
 const { red, green, blue, yellow } = colorFunctionList;
-const { line, rectangle, circle, text } = drawFunctionList;
-const { lin, rect, circ, txt } = drawFuncLi;
+const { line, rectangle, circle, text, group } = drawFunctionList;
+const { lin, rect, circ, txt, grp } = drawFuncLi;
 
 ({
   json: [
