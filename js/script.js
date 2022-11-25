@@ -149,263 +149,175 @@ const angleVector = (...argArr) => {
   return ret
 }
 
-let unit = 25
-
-const font = {
-  size: 1,
-}
-
-const stroke = {
-  color: null,
-  width: null,
-}
-
-const face = {
-  color: "#000",
+const ctx = {
+  unit: 25,
+  font: {
+    size: 1,
+    // face: undefined,
+  },
+  stroke: {
+    // color: undefined,
+    // width: undefined,
+  },
+  face: {
+    // color: undefined,
+  },
 }
 
 const convertSize = arg => {
   if (typeof arg === "undefined") {
-    return unit
+    return ctx.unit
   } else if (typeof arg === "number") {
-    return arg * unit
+    return arg * ctx.unit
   } else if (typeof arg === "string") {
     return arg
   } else {
-    return unit
+    return ctx.unit
   }
 }
 
+const getStroke = stroke => {
+  const ret = {}
 
-const execFuncLi = {
-  setUnit: prop => {
-    unit = prop
-
-    return prop
-  },
-
-  setFont: propObj => {
-    if (propObj.face != null) {
-      font.face = propObj.face
+  if (stroke === undefined) {
+    stroke = {
+      color: ctx.stroke.color,
+      width: ctx.stroke.width,
     }
-
-    if (propObj.size != null) {
-      font.size = propObj.size
+  } else if (stroke === null) {
+    stroke = {
+      color: null,
+      width: null,
     }
+  }
 
-    return propObj
-  },
+  if (stroke.color === undefined) {
+    ret.color = ctx.stroke.color
+  } else if (stroke.color !== null) {
+    ret.color = stroke.color
+  }
 
-  setStroke: propObj => {
-    if (propObj.width != null) {
-      stroke.width = propObj.width
+  if (stroke.width === undefined) {
+    ret.width = ctx.stroke.width
+  } else if (stroke.width !== null) {
+    ret.width = stroke.width
+  }
+
+  return ret
+}
+
+const getFace = face => {
+  const ret = {}
+
+  if (face === undefined) {
+    face = {
+      color: ctx.face.color,
     }
-
-    if (propObj.color != null) {
-      stroke.color = tinycolor(propObj.color).toRgbString()
+  } else if (face === null) {
+    face = {
+      color: null,
     }
+  }
 
-    return propObj
-  },
+  if (face.color === undefined) {
+    ret.color = ctx.face.color
+  } else if (face.color !== null) {
+    ret.color = face.color
+  }
 
-  setFace: propObj => {
-    if (propObj.color != null) {
-      face.color = tinycolor(propObj.color).toRgbString()
+  return ret
+}
+
+const getFont = font => {
+  const ret = {}
+
+  if (font === undefined) {
+    font = {
+      size: ctx.font.size,
     }
-
-    return propObj
-  },
-
-  line: propObj => {
-    let elmName
-    let attrObj
-
-    if (propObj.coordArray.length < 3) {
-      elmName = "line"
-
-      attrObj = {
-        "x1": convertSize(propObj.coordArray[0].x),
-        "y1": convertSize(propObj.coordArray[0].y),
-        "x2": convertSize(propObj.coordArray[1].x),
-        "y2": convertSize(propObj.coordArray[1].y),
-      }
-    } else {
-      const len = propObj.coordArray.length
-
-      if (propObj.coordArray[0].x === propObj.coordArray[len - 1].x && propObj.coordArray[0].y === propObj.coordArray[len - 1].y) {
-        elmName = "polygon"
-
-        propObj.coordArray.length = len - 1
-      } else {
-        elmName = "polyline"
-      }
-
-      attrObj = {
-        "points": propObj.coordArray.map(c => `${convertSize(c.x)},${convertSize(c.y)}`).join(" "),
-      }
-
-      if (propObj.stroke.color != null || stroke.color != null) {
-        attrObj.stroke = propObj.stroke.color || stroke.color
-      }
-
-      if (propObj.stroke.width != null || stroke.width != null) {
-        attrObj["stroke-width"] = propObj.stroke.width || stroke.width
-      }
-
-      if (propObj.face.color != null || face.color != null) {
-        attrObj.fill = propObj.face.color || face.color
-      }
+  } else if (font === null) {
+    font = {
+      size: null,
     }
+  }
 
-    const { element: svgElm, text: svgTxt } = createSvgElement({
-      elementName: elmName,
-      attribute: attrObj,
-    })
+  if (font.size === undefined) {
+    ret.size = ctx.font.size
+  } else if (font.size !== null) {
+    ret.size = font.size
+  }
 
-    svgContentTxt += svgTxt
-
-    g.appendChild(svgElm)
-
-    return svgElm
-  },
-
-  rectangle: propObj => {
-    const attrObj = {
-      "x": convertSize(propObj.coord.x),
-      "y": convertSize(propObj.coord.y),
-      "width": convertSize(propObj.size.x),
-      "height": convertSize(propObj.size.y),
-    }
-
-    if (propObj.stroke.color != null || stroke.color != null) {
-      attrObj.stroke = propObj.stroke.color || stroke.color
-    }
-
-    if (propObj.stroke.width != null || stroke.width != null) {
-      attrObj["stroke-width"] = propObj.stroke.width || stroke.width
-    }
-
-    if (propObj.face.color != null || face.color != null) {
-      attrObj.fill = propObj.face.color || face.color
-    }
-
-    const { element: svgElm, text: svgTxt } = createSvgElement({
-      elementName: "rect",
-      attribute: attrObj,
-    })
-
-    svgContentTxt += svgTxt
-
-    g.appendChild(svgElm)
-  },
-
-  circle: propObj => {
-    const attrObj = {
-      "cx": convertSize(propObj.coord.x),
-      "cy": convertSize(propObj.coord.y),
-      "r": convertSize(propObj.radius),
-    }
-
-    if (propObj.stroke.color != null || stroke.color != null) {
-      attrObj.stroke = propObj.stroke.color || stroke.color
-    }
-
-    if (propObj.stroke.width != null || stroke.width != null) {
-      attrObj["stroke-width"] = propObj.stroke.width || stroke.width
-    }
-
-    if (propObj.face.color != null || face.color != null) {
-      attrObj.fill = propObj.face.color || face.color
-    }
-
-    const { element: svgElm, text: svgTxt } = createSvgElement({
-      elementName: "circle",
-      attribute: attrObj,
-    })
-
-    svgContentTxt += svgTxt
-
-    g.appendChild(svgElm)
-  },
-
-  text: propObj => {
-    const attrObj = {
-      "x": convertSize(propObj.coord.x),
-      "y": convertSize(propObj.coord.y),
-    }
-
-    if (propObj.stroke.color != null || stroke.color != null) {
-      attrObj["stroke"] = propObj.stroke.color || stroke.color
-    }
-
-    if (propObj.stroke.width != null || stroke.width != null) {
-      attrObj["stroke-width"] = convertSize(propObj.stroke.width || stroke.width)
-    }
-
-    if (propObj.face.color != null || face.color != null) {
-      attrObj["fill"] = propObj.face.color || face.color
-    }
-
-    if (propObj.font.family != null || font.family != null) {
-      attrObj["font-family"] = propObj.font.family || font.family
-    }
-
-    if (propObj.font.size != null || font.size != null) {
-      attrObj["font-size"] = convertSize(propObj.font.size || font.size)
-    }
-
-    if (propObj.align != null) {
-      attrObj["text-anchor"] = {
-        "-1": "start",
-        "0": "middle",
-        "1": "end",
-      }[(propObj.align + 4) % 3 - 1]
-      attrObj["dominant-baseline"] = {
-        "-1": "text-top",
-        "0": "middle",
-        "1": "baseline",
-      }[Math.floor((propObj.align + 1) / 3)]
-    }
-
-    const { element: svgElm, text: svgTxt } = createSvgElement({
-      elementName: "text",
-      attribute: attrObj,
-      content: propObj.content,
-    })
-
-    svgContentTxt += svgTxt
-
-    g.appendChild(svgElm)
-  },
-
-  group: propObj => {
-    const attrObj = {
-      "transform": propObj.transform,
-    }
-
-    const { element: svgElm, text: svgTxt } = createSvgElement({
-      elementName: "g",
-      attribute: attrObj,
-      content: propObj.content,
-    })
-
-    svgContentTxt += svgTxt
-
-    g.appendChild(svgElm)
-  },
+  return ret
 }
 
 
-const setFunctionList = {
-  Unit: (prop = 1) => body => {
-    const propObj = prop
+const createSvgElement = obj => {
+  const [head, body] = obj
+  const [tag, prop] = Object.entries(head)[0]
 
-    return ({
-      setUnit: propObj,
-    })
+  let ret
+
+  const elm = document.createElementNS(svgNs, tag)
+
+  Object.entries(prop).forEach(([key, val]) => {
+    elm.setAttribute(key, val)
+  })
+
+  if (body != null) {
+    elm.innerHTML = body
+  }
+
+  const xml = `<${tag} ${Object.entries(prop).map(([key, val]) => {
+    return `${key}="${val}"`
+  }).join(" ")}>${body != null ? content : ""}</${tag}>`
+
+  svgContentTxt += xml
+
+  g.appendChild(elm)
+
+  ret = [{
+    "createElement": {
+      obj, elm, xml
+    }
+  }]
+
+  return ret
+}
+
+const setContext = obj => {
+  const [head, body] = obj
+  const [tag, prop] = Object.entries(head)[0]
+
+  let ret
+
+  Object.entries(prop).forEach(([key, val]) => {
+    ctx[tag][key] = val
+  })
+
+  ret = [{
+    "setContext": obj,
+  }]
+
+  return ret
+}
+
+
+const funcLi = {
+  Unit: (prop = 1) => body => {
+    ctx.unit = prop
+
+    return [{ "Unit": propObj }]
   },
 
   Font: prop => body => {
+    if (propObj.face != null) {
+      ctx.font.face = propObj.face
+    }
+
+    if (propObj.size != null) {
+      ctx.font.size = propObj.size
+    }
+
     const propObj = {}
 
     const { size = 1, family } = prop
@@ -413,79 +325,184 @@ const setFunctionList = {
     propObj.size = size
     propObj.family = family
 
-    return ({
-      setFont: propObj,
-    })
+    return [{ "Font": propObj }]
   },
 
-  Stroke: prop => body => {
+  Stroke: prop => _body => {
     const propObj = {}
 
     if (prop === undefined) {
       propObj.color = tinycolor(0x000000).toRgbString()
       propObj.width = 1
-    } else if (prop == null) {
+    } else if (prop === undefined) {
     } else {
       const { color, width } = prop
 
-      if (color != null) {
+      if (color !== null) {
         propObj.color = tinycolor(color).toRgbString()
       }
 
-      if (width != null) {
+      if (width !== null) {
         propObj.width = width
       }
     }
 
-    return ({
-      setStroke: propObj,
-    })
+    return setContext([{
+      "stroke": propObj,
+    }])
   },
 
-  Face: prop => body => {
+  Face: prop => _body => {
     const propObj = {}
 
     const { color } = prop
 
-    if (color != null) {
+    if (color !== null) {
       propObj.color = tinycolor(color).toRgbString()
     }
 
-    return ({
-      setFace: propObj,
-    })
+    return setContext([{
+      "face": propObj,
+    }])
+  },
+
+
+  Line: prop => body => {
+    const coordArray = (body.length > 0 ? body : prop["coord-array"] || []).map(coord => vector(coord)) || [vector(0, 0), vector(1, 0)]
+
+    const stroke = getStroke(prop.stroke)
+    const face = getFace(prop.face)
+
+    let attrObj
+
+    if (coordArray.length < 3) {
+      elmName = "line"
+
+      attrObj = {
+        "x1": convertSize(coordArray[0].x),
+        "y1": convertSize(coordArray[0].y),
+        "x2": convertSize(coordArray[1].x),
+        "y2": convertSize(coordArray[1].y),
+      }
+    } else {
+      const len = coordArray.length
+
+      if (coordArray[0].x === coordArray[len - 1].x && coordArray[0].y === coordArray[len - 1].y) {
+        elmName = "polygon"
+
+        coordArray.length = len - 1
+      } else {
+        elmName = "polyline"
+      }
+
+      attrObj = {
+        "points": coordArray.map(c => `${convertSize(c.x)},${convertSize(c.y)}`).join(" "),
+        ...(stroke.color !== null && { "stroke": stroke.color }),
+        ...(stroke.width !== null && { "stroke-width": stroke.width }),
+        ...(face.color !== null && { "fill": face.color }),
+      }
+    }
+
+    return createSvgElement([
+      { [elmName]: attrObj },
+    ])
+  },
+
+  Rectangle: prop => body => {
+    const coord = vector(body[0]) || vector(prop.coord) || vector(0, 0)
+    const size = vector(body[1]) || vector(prop.size) || vector(1, 1)
+
+    const stroke = getStroke(prop.stroke)
+    const face = getFace(prop.face)
+
+    const attrObj = {
+      "x": convertSize(coord.x),
+      "y": convertSize(coord.y),
+      "width": convertSize(size.x),
+      "height": convertSize(size.y),
+      ...(stroke.color !== null && { "stroke": stroke.color }),
+      ...(stroke.width !== null && { "stroke-width": stroke.width }),
+      ...(face.color !== null && { "fill": face.color }),
+    }
+
+    return createSvgElement([
+      { "rect": attrObj }
+    ])
+  },
+
+  Circle: prop => body => {
+    const coord = vector(body[0]) || vector(prop.coord) || vector(0, 0)
+    const radius = body[1] || prop.radius || 1
+
+    const stroke = getStroke(prop.stroke)
+    const face = getFace(prop.face)
+
+    const attrObj = {
+      "cx": convertSize(coord.x),
+      "cy": convertSize(coord.y),
+      "r": convertSize(radius),
+      ...(stroke.color !== null && { "stroke": stroke.color }),
+      ...(stroke.width !== null && { "stroke-width": stroke.width }),
+      ...(face.color !== null && { "fill": face.color }),
+    }
+
+    return createSvgElement([
+      { "circle": attrObj }
+    ])
+  },
+
+  Text: prop => body => {
+    const coord = vector(body[0]) || vector(prop.coord)
+    const content = body[1] != null ? body[1] : (prop.content || "")
+    const align = prop.align || 0
+
+    const stroke = getStroke(prop.stroke)
+    const face = getFace(prop.face)
+    const font = getFont(prop.font)
+
+    const attrObj = {
+      "x": convertSize(coord.x),
+      "y": convertSize(coord.y),
+      ...(stroke.color !== null && { "stroke": stroke.color }),
+      ...(stroke.width !== null && { "stroke-width": stroke.width }),
+      ...(face.color !== null && { "fill": face.color }),
+      ...(font.size !== null && { "font-size": convertSize(font.size) }),
+    }
+
+    if (align != null) {
+      attrObj["text-anchor"] = {
+        "-1": "start",
+        "0": "middle",
+        "1": "end",
+      }[(align + 4) % 3 - 1]
+      attrObj["dominant-baseline"] = {
+        "-1": "text-top",
+        "0": "middle",
+        "1": "baseline",
+      }[Math.floor((align + 1) / 3)]
+    }
+
+    return createSvgElement([
+      { "text": attrObj },
+      content
+    ])
+  },
+
+  Group: prop => body => {
+    const transform = prop.transform
+
+    const attrObj = {
+      ...(transform && { "transform": transform })
+    }
+
+    return createSvgElement([
+      { "rect": attrObj },
+      body,
+    ])
   },
 }
 
-
-const createSvgElement = ({ elementName, attribute, content }) => {
-  let ret
-
-  const element = document.createElementNS(svgNs, elementName)
-
-  Object.keys(attribute).forEach(key => {
-    element.setAttribute(key, attribute[key])
-  })
-
-  if (content != null) {
-    element.innerHTML = content
-  }
-
-  const text = `<${elementName} ${Object.keys(attribute).map(key => {
-    return `${key}="${attribute[key]}"`
-  }).join(" ")}>${content != null ? content : ""}</${elementName}>
-  `
-
-  ret = { element, text }
-
-  return ret
-}
-
-
-const colorFunctionList = {
-}
-
-const colorLi = {
+const cmdColorLi = {
   "Black": "black",
   "White": "white",
   "Red": "red",
@@ -494,108 +511,14 @@ const colorLi = {
   "Yellow": "yellow",
 }
 
-Object.keys(colorLi).forEach(key => {
-  colorFunctionList[key] = _ => setFunctionList.Face({
-    color: tinycolor(colorLi[key]).toRgbString(),
-  });
+Object.entries(cmdColorLi).forEach(([cmd, col]) => {
+  const prop = {
+    color: tinycolor(col).toRgbString()
+  }
+
+  funcLi[cmd] = _body => funcLi.Face(prop)
 })
 
-const drawFunctionList = {
-  Line: prop => body => {
-    const propObj = {
-      coordArray: [vector(0, 0), vector(1, 0)],
-      stroke: {},
-      face: {},
-    }
-
-    propObj.coordArray = (prop["coord-array"] || body).map(coord => vector(coord)) || [vector(0, 0), vector(1, 0)]
-    propObj.stroke = Object.assign({}, propObj.stroke, prop.stroke)
-    propObj.face = Object.assign({}, propObj.face, prop.face)
-
-    return ({
-      line: propObj,
-    })
-  },
-
-  Rectangle: prop => body => {
-    const propObj = {
-      coord: vector(0, 0),
-      size: vector(1, 1),
-      stroke: {},
-      face: {},
-    }
-
-    propObj.coord = vector(prop.coord) || vector(body[0]) || vector(0, 0)
-    propObj.size = vector(prop.size) || vector(body[1]) || vector(1, 1)
-    propObj.stroke = Object.assign({}, propObj.stroke, prop.stroke)
-    propObj.face = Object.assign({}, propObj.face, prop.face)
-
-    return ({
-      rectangle: propObj,
-    })
-  },
-
-  Circle: prop => body => {
-    const propObj = {
-      coord: vector(0, 0),
-      radius: 1,
-      stroke: {},
-      face: {},
-    }
-
-    propObj.coord = vector(prop.coord) || vector(body[0]) || vector(0, 0)
-    propObj.radius = prop.radius || body[1] || 1
-    propObj.stroke = Object.assign({}, propObj.stroke, prop.stroke)
-    propObj.face = Object.assign({}, propObj.face, prop.face)
-
-    return ({
-      circle: propObj,
-    })
-  },
-
-  Text: prop => body => {
-    const propObj = {
-      content: "",
-      coord: vector(0, 0),
-      font: {},
-      stroke: {},
-      face: {},
-      align: 0,
-    }
-
-    if (content != null) {
-      propObj.content = prop.content || vector(body[1])
-    }
-    propObj.coord = vector(prop.coord) || vector(body[0]) || propObj.coord
-    propObj.stroke = Object.assign({}, propObj.stroke, prop.stroke)
-    propObj.face = Object.assign({}, propObj.face, prop.face)
-    propObj.font = Object.assign({}, propObj.font, prop.font)
-    propObj.align = prop.align || propObj.align
-
-    return ({
-      text: propObj,
-    })
-  },
-
-  Group: prop => body => {
-    const propObj = {
-      transform: "",
-      content: "",
-    }
-
-    propObj.transform = prop.transform || propObj.transform
-
-    if (content != null) {
-      propObj.content = prop.content
-    }
-
-    return ({
-      group: propObj,
-    })
-  },
-}
-
-const funcLi = Object.assign({}, setFunctionList, colorFunctionList, drawFunctionList)
 
 const evalJSON = obj => {
   const arr = obj
@@ -603,27 +526,11 @@ const evalJSON = obj => {
   return arr.map(seq => {
     const [head, ...body] = seq
 
-    const [tag, prop] = Object.entries(head)[0]
+    const [tag, prop] = typeof head === "string" ? [head, {}] : Object.entries(head)[0]
 
-    let drawObj = {}
-
-    drawObj = funcLi[tag](prop)(body)
-
-    return drawObj
+    return funcLi[tag](prop)(body)
   })
-    .map(item => {
-      Object.keys(item).map(key => {
-        const propObj = item[key]
-
-        if (Object.keys(execFuncLi).includes(key)) {
-          return execFuncLi[key](propObj)
-        } else {
-          return {}
-        }
-      })
-    })
 }
-
 
 const json = strArr => eval(strArr.join(""))
 const yaml = strArr => jsyaml.load(strArr.join(""))
@@ -660,7 +567,9 @@ const inputHandler = (evt = {}) => {
     jsonElm.innerHTML = JSON5.stringify(obj, null, 2)
     yamlElm.innerHTML = jsyaml.dump(obj)
 
-    evalJSON(obj)
+    evalJSON(obj).map(line => {
+      // console.log(line)
+    })
 
     content.push({
       svg: `<svg width="610" height="377" viewBox="0 0 610 377"><g>${svgContentTxt
