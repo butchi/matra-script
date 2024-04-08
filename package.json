@@ -1,0 +1,19 @@
+{
+  "name": "matra-magica",
+  "version": "0.3.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@material/web": "^1.4.0",
+    "@types/pdfmake": "^0.2.9",
+    "material-icons": "^1.13.12",
+    "material-symbols": "^0.17.1",
+    "pdfmake": "^0.2.10",
+    "typescript": "^5.2.2",
+    "vite": "^5.2.0"
+  }
+}
