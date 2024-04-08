@@ -10,9 +10,13 @@
   "devDependencies": {
     "@material/web": "^1.4.0",
     "@types/pdfmake": "^0.2.9",
+    "@types/tinycolor2": "^1.4.6",
+    "js-yaml": "^4.1.0",
+    "json5": "^2.2.3",
     "material-icons": "^1.13.12",
     "material-symbols": "^0.17.1",
     "pdfmake": "^0.2.10",
+    "tinycolor2": "^1.6.0",
     "typescript": "^5.2.2",
     "vite": "^5.2.0"
   }
