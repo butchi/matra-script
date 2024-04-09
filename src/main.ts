@@ -11,19 +11,20 @@ import '@material/web/tabs/secondary-tab'
 import '@material/web/icon/icon'
 import { MdTabs } from '@material/web/tabs/tabs'
 
-import matraScript from './js/lib/matra-script-parser'
+import './matra-script-parser'
 
 import './style.css'
 
 declare global {
     interface Window {
         pdfMake: any,
+        matraScript: any,
     }
 }
 
 const pdfMake = window!.pdfMake
 
-const content: string | string[] = []
+const content: string[] = []
 
 pdfMake.fonts = ({
     Roboto: {
@@ -358,22 +359,22 @@ const setContext = (obj: unknown[]) => {
 }
 
 const funcLi = {
-    Unit: (prop = 1) => (_body: string[]) => {
+    Unit: (prop = 1) => (_body: unknown[]) => {
         ctx.unit = prop
 
         return setContext([{ Unit: prop }])
     },
 
-    Size: (prop = 1) => (_body: string[]) => {
+    Size: (prop = 1) => (_body: unknown[]) => {
         ctx.size = prop
 
         return setContext([{ Unit: prop }])
     },
 
-    Font: (prop: FontContext) => (_body: string[]) => {
+    Font: (prop: FontContext) => (_body: unknown[]) => {
         const propObj = {} as FontContext
 
-        propObj.face = prop.face ?? ctx.font.face ?? 1
+        propObj.face = prop.face ?? ctx.font.face ?? '#000000'
         propObj.size = prop.size ?? ctx.font.size ?? 1
         propObj.family = prop.family ?? ctx.font.family ?? 'sans-serif'
 
@@ -382,10 +383,10 @@ const funcLi = {
         }])
     },
 
-    Stroke: (prop: StrokeContext) => (_body: string[]) => {
+    Stroke: (prop: StrokeContext) => (_body: unknown[]) => {
         const propObj = {} as StrokeContext
 
-        propObj.color =  tinycolor(prop.color).toRgbString() ?? tinycolor('#000000').toRgbString()
+        propObj.color =  tinycolor(prop.color ?? '#000000').toRgbString() ?? tinycolor('#000000').toRgbString()
         propObj.width = prop.width ?? 1
 
         return setContext([{
@@ -393,7 +394,7 @@ const funcLi = {
         }])
     },
 
-    Face: (prop: FaceContext) => (_body: string[]) => {
+    Face: (prop: FaceContext) => (_body: unknown[]) => {
         const propObj = {} as FaceContext
 
         propObj.color = tinycolor(prop.color ?? '0xffffff').toRgbString()
@@ -403,11 +404,11 @@ const funcLi = {
         }])
     },
 
-    Line: (prop: LineProp) => (body: string[] | null) => {
+    Line: (prop: LineProp) => (body: unknown[] | null) => {
         let elmName
 
-        const coordArray = (body.length && body || (prop['coord-array'] ?? []))
-            .map((coord: { vector: {x: number, y: number} }) => vector(coord)) || [vector(0, 0), vector(1, 0)]
+        const coordArray = (body?.length && body || (prop['coord-array'] ?? []))
+            .map((coord: unknown) => vector(coord)) || [vector(0, 0), vector(1, 0)]
 
         const stroke = getStroke(prop.stroke)
         const face = getFace(prop.face)
@@ -450,7 +451,7 @@ const funcLi = {
         return createSvgElement([{ [elmName]: attrObj }])
     },
 
-    Rectangle: (prop: RectangleProp) => (body: string[]) => {
+    Rectangle: (prop: RectangleProp) => (body: unknown[]) => {
         const coord = vector(body[0]) || vector(prop.coord) || vector(0, 0)
         const size = vector(body[1]) || vector(prop.size) || vector(1, 1)
 
@@ -470,7 +471,7 @@ const funcLi = {
         return createSvgElement([{ rect: attrObj }])
     },
 
-    Circle: (prop: CircleProp) => (body: string[]) => {
+    Circle: (prop: CircleProp) => (body: unknown[]) => {
         const coord = vector(body[0]) || vector(prop.coord) || vector(0, 0)
         const radius = body[1] || prop.radius || 1
 
@@ -489,7 +490,7 @@ const funcLi = {
         return createSvgElement([{ circle: attrObj }])
     },
 
-    Text: (prop: TextProp) => (body: string[]) => {
+    Text: (prop: TextProp) => (body: unknown[]) => {
         const coord = vector(body[0]) || vector(prop.coord)
         const content = (body[1] ?? prop.content) || ''
         const align = prop.align || 0
@@ -523,7 +524,7 @@ const funcLi = {
         return createSvgElement([{ text: attrObj }, content])
     },
 
-    Group: (prop: GroupProp) => (body: string) => {
+    Group: (prop: GroupProp) => (body: unknown[]) => {
         const transform = prop.transform
 
         const attrObj = {
@@ -532,22 +533,22 @@ const funcLi = {
 
         return createSvgElement([{ rect: attrObj }, body])
     },
-    Black: (_body: string[]) => funcLi.Face({
+    Black: (_body: unknown[]) => funcLi.Face({
         color: tinycolor('black').toRgbString(),
     } as FaceContext),
-    White: (_body: string[]) => funcLi.Face({
+    White: (_body: unknown[]) => funcLi.Face({
         color: tinycolor('white').toRgbString(),
     } as FaceContext),
-    Red: (_body: string[]) => funcLi.Face({
+    Red: (_body: unknown[]) => funcLi.Face({
         color: tinycolor('red').toRgbString(),
     } as FaceContext),
-    Green: (_body: string[]) => funcLi.Face({
+    Green: (_body: unknown[]) => funcLi.Face({
         color: tinycolor('green').toRgbString(),
     } as FaceContext),
-    Blue: (_body: string[]) => funcLi.Face({
+    Blue: (_body: unknown[]) => funcLi.Face({
         color: tinycolor('blue').toRgbString(),
     } as FaceContext),
-    Yellow: (_body: string[]) => funcLi.Face({
+    Yellow: (_body: unknown[]) => funcLi.Face({
         color: tinycolor('yellow').toRgbString(),
     } as FaceContext),
 }
@@ -561,7 +562,40 @@ const evalJSON = (obj: object[][]) => {
         const [tag, prop] =
             typeof head === 'string' ? [head, {}] : Object.entries(head)[0]
 
-        return funcLi[tag](prop)(body)
+        if (tag == null) {
+        } else if (tag === 'Unit') {
+            return funcLi.Unit(prop)(body)
+        } else if (tag === 'Size') {
+            return funcLi.Size(prop)(body)
+        } else if (tag === 'Font') {
+            return funcLi.Font(prop)(body)
+        } else if (tag === 'Stroke') {
+            return funcLi.Stroke(prop)(body)
+        } else if (tag === 'Face') {
+            return funcLi.Face(prop)(body)
+        } else if (tag === 'Line') {
+            return funcLi.Line(prop)(body)
+        } else if (tag === 'Rectangle') {
+            return funcLi.Rectangle(prop)(body)
+        } else if (tag === 'Circle') {
+            return funcLi.Circle(prop)(body)
+        } else if (tag === 'Text') {
+            return funcLi.Text(prop)(body)
+        } else if (tag === 'Group') {
+            return funcLi.Group(prop)(body)
+        } else if (tag === 'Black') {
+            return funcLi.Black(prop)(body)
+        } else if (tag === 'White') {
+            return funcLi.White(prop)(body)
+        } else if (tag === 'Red') {
+            return funcLi.Red(prop)(body)
+        } else if (tag === 'Green') {
+            return funcLi.Green(prop)(body)
+        } else if (tag === 'Blue') {
+            return funcLi.Blue(prop)(body)
+        } else if (tag === 'Yellow') {
+            return funcLi.Yellow(prop)(body)
+        }
     })
 }
 
@@ -574,30 +608,26 @@ const jsonElm = document.getElementById('matra-json') as HTMLTextAreaElement
 
 const yamlElm = document.getElementById('matra-yaml') as HTMLTextAreaElement
 
-const inputHandler = (evt: Event) => {
+const inputHandler = () => {
     content.length = 0
     g.innerHTML = ''
     svgContentTxt = ''
 
-    const val = (evt?.target as HTMLTextAreaElement)?.value ?? codeElm.innerHTML
+    const val = codeElm.value ?? codeElm.innerHTML
 
     const mScr = val.replaceAll('&lt;', '<').replaceAll('&gt;', '>')
 
     try {
-        const obj = globalThis.matraScript.parse(mScr)
+        const obj = window.matraScript.parse(mScr)
 
         jsonElm.innerHTML = JSON5.stringify(obj, null, 2)
         yamlElm.innerHTML = jsyaml.dump(obj)
 
-        evalJSON(obj).map(line => {
+        evalJSON(obj).map(_line => {
             // console.log(line)
         })
 
-        content.push({
-            svg: `<svg width="610" height="377" viewBox="0 0 610 377"><g>${svgContentTxt}</g></svg>`,
-            width: 610,
-            height: 377,
-        })
+        content.push(`<svg width="610" height="377" viewBox="0 0 610 377"><g>${svgContentTxt}</g></svg>`)
     } catch (e) {
         console.log(e)
     }
@@ -605,32 +635,32 @@ const inputHandler = (evt: Event) => {
 
 codeElm.addEventListener('input', inputHandler)
 
-const range = (...argArr) => {
-    let ret = []
-    let start = 1
-    let end = 1
+// const range = (...argArr: unknown[]) => {
+//     let ret = []
+//     let start = 1
+//     let end = 1
 
-    if (argArr.length === 0) {
-        start = 1
-        end = 1
-    } else if (argArr.length === 1) {
-        start = 1
-        end = argArr[0]
-    } else {
-        start = argArr[0]
-        end = argArr[1]
-    }
+//     if (argArr.length === 0) {
+//         start = 1
+//         end = 1
+//     } else if (argArr.length === 1) {
+//         start = 1
+//         end = argArr[0] as number
+//     } else {
+//         start = argArr[0] as number
+//         end = argArr[1] as number
+//     }
 
-    for (let i = start; i <= end; i++) {
-        ret.push(i)
-    }
+//     for (let i = start; i <= end; i++) {
+//         ret.push(i)
+//     }
 
-    return ret
-}
+//     return ret
+// }
 
-const color = arg => {
-    return tinycolor(arg)
-}
+// const color = (arg as string) => {
+//     return tinycolor(arg)
+// }
 
 const exampleStr =
     'matra`' +
