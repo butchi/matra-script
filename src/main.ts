@@ -1,7 +1,12 @@
-import 'pdfmake'
 import tinycolor from 'tinycolor2'
 import JSON5 from 'JSON5'
 import jsyaml from 'js-yaml'
+
+import * as pdfMake from 'pdfmake/build/pdfmake'
+import * as pdfFonts from 'pdfmake/build/vfs_fonts'
+import { TDocumentDefinitions } from 'pdfmake/interfaces'
+
+(<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
 
 import 'material-symbols'
 import '@material/web/button/filled-button'
@@ -17,31 +22,35 @@ import './style.css'
 
 declare global {
     interface Window {
-        pdfMake: any,
         matraScript: any,
     }
 }
 
-const pdfMake = window!.pdfMake
+// const pdfMake = window!.pdfMake
 
-const content: string[] = []
+const content: object[] = []
 
-pdfMake.fonts = ({
+const fonts = ({
     Roboto: {
-      normal: 'Roboto-Regular.ttf',
+        normal: 'Roboto-Regular.ttf',
+        bold: 'Roboto-Medium.ttf',
+        italics: 'Roboto-Italic.ttf',
+        bolditalics: 'Roboto-MediumItalic.ttf',
     },
 })
 
 const docDefinition = {
     content,
     defaultStyle: {
+        font: 'Roboto',
         color: 'gray',
     },
-}
+} as TDocumentDefinitions
 
 const btnCreateElm = document.getElementById('button-create')
 btnCreateElm?.addEventListener('click', _evt => {
-    pdfMake.createPdf(docDefinition).open()
+    // TODO: テキストがレンダリングされないので要改善
+    pdfMake.createPdf(docDefinition, undefined, fonts, pdfMake.vfs).open()
 })
 
 const menuTabParent = document.querySelector('md-tabs.menu-tab')
@@ -627,7 +636,11 @@ const inputHandler = () => {
             // console.log(line)
         })
 
-        content.push(`<svg width="610" height="377" viewBox="0 0 610 377"><g>${svgContentTxt}</g></svg>`)
+        content.push({
+            svg: `<svg width="610" height="377" viewBox="0 0 610 377"><g>${svgContentTxt}</g></svg>`,
+            width: 610,
+            height: 377,
+        })
     } catch (e) {
         console.log(e)
     }
