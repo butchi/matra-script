@@ -26,8 +26,6 @@ declare global {
     }
 }
 
-// const pdfMake = window!.pdfMake
-
 const content: object[] = []
 
 const fonts = ({
