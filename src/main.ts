@@ -2,11 +2,8 @@ import tinycolor from 'tinycolor2'
 import JSON5 from 'JSON5'
 import jsyaml from 'js-yaml'
 
-import * as pdfMake from 'pdfmake/build/pdfmake'
-import * as pdfFonts from 'pdfmake/build/vfs_fonts'
+import pdfMake from 'pdfmake/build/pdfmake'
 import { TDocumentDefinitions } from 'pdfmake/interfaces'
-
-(<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
 
 import 'material-symbols'
 import '@material/web/button/filled-button'
@@ -28,12 +25,12 @@ declare global {
 
 const content: object[] = []
 
-const fonts = ({
+pdfMake.fonts = ({
     Roboto: {
-        normal: 'Roboto-Regular.ttf',
-        bold: 'Roboto-Medium.ttf',
-        italics: 'Roboto-Italic.ttf',
-        bolditalics: 'Roboto-MediumItalic.ttf',
+        normal: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf',
+        bold: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf',
+        italics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf',
+        bolditalics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf',
     },
 })
 
@@ -48,7 +45,7 @@ const docDefinition = {
 const btnCreateElm = document.getElementById('button-create')
 btnCreateElm?.addEventListener('click', _evt => {
     // TODO: テキストがレンダリングされないので要改善
-    pdfMake.createPdf(docDefinition, undefined, fonts, pdfMake.vfs).open()
+    pdfMake.createPdf(docDefinition).open()
 })
 
 const menuTabParent = document.querySelector('md-tabs.menu-tab')
