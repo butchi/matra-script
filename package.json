@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "deploy": "gh-pages -d dist",
     "preview": "vite preview"
   },
   "devDependencies": {
@@ -12,6 +13,7 @@
     "@types/js-yaml": "^4.0.9",
     "@types/pdfmake": "^0.2.9",
     "@types/tinycolor2": "^1.4.6",
+    "gh-pages": "^6.1.1",
     "js-yaml": "^4.1.0",
     "json5": "^2.2.3",
     "material-icons": "^1.13.12",
