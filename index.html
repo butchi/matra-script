@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MatraScript</title>
+  <script type="module" crossorigin src="/matra-magica/assets/index-SQxGXe4O.js"></script>
+  <link rel="stylesheet" crossorigin href="/matra-magica/assets/index-BYLhyNNc.css">
+</head>
+
+<body>
+  <div class="wrapper">
+    <md-tabs class="menu-tab">
+      <md-secondary-tab>
+        <md-icon slot="icon">code_blocks</md-icon>
+        JSON
+      </md-secondary-tab>
+      <md-secondary-tab>
+        <md-icon slot="icon">code_blocks</md-icon>
+        YAML
+      </md-secondary-tab>
+      <md-secondary-tab active>
+        <md-icon slot="icon">polyline</md-icon>
+        SVG
+      </md-secondary-tab>
+    </md-tabs>
+
+    <div style="display: flex; width: 100%;">
+      <textarea id="matra-script-code" style="width: 33%;"></textarea>
+
+      <div style="width: 66%;">
+        <textarea id="matra-json" data-tab-content data-tab-label="json"
+          style="width: 100%; height: 610px; display: none;"></textarea>
+        <textarea id="matra-yaml" data-tab-content data-tab-label="yaml"
+          style="width: 100%; height: 610px; display: none;"></textarea>
+        <div class="draw-base" data-tab-content data-tab-label="svg"></div>
+      </div>
+    </div>
+    <md-filled-button
+      id="button-create"
+      style="margin-top: 15px;">
+        PDF生成
+    </md-filled-button>
+  </div>
+</body>
+
+</html>
